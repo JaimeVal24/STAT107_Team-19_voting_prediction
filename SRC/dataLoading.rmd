@@ -1,0 +1,83 @@
+
+```{r}
+library(readr)
+library(here)
+```
+
+```{r}
+demographics = read_csv(
+  here("Datasets", "demographics.csv"), 
+  skip = 2,
+  na = "N/A",
+  
+  col_types = cols(
+    Footnotes = col_skip() 
+  )
+)
+
+print(demographics)
+```
+
+```{r}
+# Load the full tidyverse for filtering and pivoting
+library(tidyverse)
+library(here)
+
+commuter_data_raw <- read_tsv(here("Datasets", "state_commuter_mode.csv")) %>%
+  
+  rename(Share = "Commute mode share (percent)")
+
+commuter_data_wide <- commuter_data_raw %>%
+  
+  filter(Year == 2023) %>%
+  
+  select(-Year) %>%
+
+  pivot_wider(
+    names_from = Mode,
+    values_from = Share
+  )
+
+print(commuter_data_wide)
+```
+
+```{r}
+gun_ownership_data <- read_csv(here("Datasets", "gun-ownership-by-state-2025.csv"))
+
+print(gun_ownership_data)
+```
+
+
+```{r}
+library(tidyverse)
+library(lubridate)
+library(here)
+
+covid_deaths_raw <- read_csv(here("Datasets", "covid_deaths.csv"))
+
+state_names <- unique(demographics$Location)
+
+latest_state_totals <- covid_deaths_raw %>%
+  
+  filter(Jurisdiction_Residence %in% state_names) %>%
+  mutate(end_date = mdy(data_period_end)) %>%
+  group_by(Jurisdiction_Residence) %>%
+  arrange(desc(end_date)) %>%
+  slice(1) %>%
+  ungroup()
+
+print(latest_state_totals)
+```
+
+
+```{r}
+library(tidyverse)
+
+joined_data <- demographics %>%
+  left_join(commuter_data_wide, by = c("Location" = "State")) %>%
+  left_join(gun_ownership_data, by = c("Location" = "state")) %>% 
+  left_join(latest_state_totals, by = c("Location" = "Jurisdiction_Residence"))
+
+print(head(joined_data))
+glimpse(joined_data)
+```
