@@ -1,7 +1,8 @@
 
 ```{r}
-library(readr)
 library(here)
+
+source(here("00_requirements.R"))
 ```
 
 ```{r}
@@ -19,10 +20,6 @@ print(demographics)
 ```
 
 ```{r}
-# Load the full tidyverse for filtering and pivoting
-library(tidyverse)
-library(here)
-
 commuter_data_raw <- read_tsv(here("Datasets", "state_commuter_mode.csv")) %>%
   
   rename(Share = "Commute mode share (percent)")
@@ -49,10 +46,6 @@ print(gun_ownership_data)
 
 
 ```{r}
-library(tidyverse)
-library(lubridate)
-library(here)
-
 covid_deaths_raw <- read_csv(here("Datasets", "covid_deaths.csv"))
 
 state_names <- unique(demographics$Location)
@@ -71,8 +64,6 @@ print(latest_state_totals)
 
 
 ```{r}
-library(tidyverse)
-
 joined_data <- demographics %>%
   left_join(commuter_data_wide, by = c("Location" = "State")) %>%
   left_join(gun_ownership_data, by = c("Location" = "state")) %>% 
