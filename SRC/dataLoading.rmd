@@ -61,13 +61,19 @@ latest_state_totals <- covid_deaths_raw %>%
 
 print(latest_state_totals)
 ```
+```{r}
+merged_data_raw <- read.csv(here("Datasets", "Unemployment_Income_Voting_Merged.csv"))
+merged_data_clean <- merged_data_raw[-c(51, 53), -2]
 
+print(merged_data_clean)
+```
 
 ```{r}
 joined_data <- demographics %>%
   left_join(commuter_data_wide, by = c("Location" = "State")) %>%
   left_join(gun_ownership_data, by = c("Location" = "state")) %>% 
-  left_join(latest_state_totals, by = c("Location" = "Jurisdiction_Residence"))
+  left_join(latest_state_totals, by = c("Location" = "Jurisdiction_Residence")) %>%
+  left_join(merged_data_clean, by = c("Location" = "State.Name"))
 
 print(head(joined_data))
 glimpse(joined_data)
