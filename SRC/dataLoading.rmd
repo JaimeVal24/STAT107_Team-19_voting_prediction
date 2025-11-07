@@ -40,7 +40,7 @@ print(commuter_data_wide)
 
 ```{r}
 gun_ownership_data <- read_csv(here("Datasets", "gun-ownership-by-state-2025.csv"))
-
+gun_ownership_data <- gun_ownership_data[,-1]
 print(gun_ownership_data)
 ```
 
@@ -65,6 +65,7 @@ print(latest_state_totals)
 
 ```{r}
 merged_data_raw <- read.csv(here("Datasets", "Unemployment_Income_Voting_Merged.csv"))
+merged_data_raw$Median.Household.Income <- as.numeric(gsub(",", "", merged_data_raw$Median.Household.Income))
 merged_data_clean <- merged_data_raw[-c(51, 53), -2]
 
 print(merged_data_clean)
@@ -77,6 +78,9 @@ joined_data <- demographics %>%
   left_join(latest_state_totals, by = c("Location" = "Jurisdiction_Residence")) %>%
   left_join(merged_data_clean, by = c("Location" = "State.Name"))
 
+joined_data <- joined_data[-1, ]
 print(head(joined_data))
 glimpse(joined_data)
 ```
+
+
