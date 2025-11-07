@@ -102,7 +102,7 @@ for(year in elections){
   pie(avg_race_rep, labels = race_data, main = paste("Republican", year))
 }
 ```
-Lastly, we can compare the average gun ownership percentage, pandemic COVID-19 rate, unemployment rate, and median household income for states that went blue and red in the 2024 election. We can see that states that voted Republican in 2024 have a much higher average gun ownership rate and average COVID-19 rate during the pandemic, and democratic states have a slightly higher average unemployment rate and average median household income.
+We can compare the average gun ownership percentage, pandemic COVID-19 rate, unemployment rate, and median household income for states that went blue and red in the 2024 election. We can see that states that voted Republican in 2024 have a much higher average gun ownership rate and average COVID-19 rate during the pandemic, and democratic states have a slightly higher average unemployment rate and average median household income.
 
 ```{r, echo=FALSE}
 comparison_data <- c(
@@ -126,8 +126,25 @@ for(var in comparison_data){
 
 ```
 
+```{r, echo=FALSE}
+selected_vars <- c(
+  "COVID_deaths",
+  "GunOwnership_PercentageOfHouseholdsThatOwnGuns_pct_2022",
+  "White"
+)
 
-
+for (col_name in selected_vars) {
+  boxplot(joined_data[[col_name]],
+          main = paste("Distribution of", col_name),
+          ylab = paste("Values of", col_name))
+  grid(nx = NA, ny = NULL)
+  explanation <- paste(
+    "This boxplot shows the spread and variability of", col_name, "across states."
+  )
+  mtext(explanation, side = 1, line = 1, cex = 0.7)
+}
+```
+Lastly, we can create box plots to understand  the distribution of the datasets through their median, spread, and overall range. They highlight the central tendency, variability, and possible outliers and will give us more insight into our specific data and the validity of it as we are able to identify any skewed distributions. These speicifc ones are just a few of all of the box plots we can create for each varaible introduced. 
 
 **Analysis**:
 
