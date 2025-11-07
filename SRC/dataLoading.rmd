@@ -67,7 +67,7 @@ print(latest_state_totals)
 merged_data_raw <- read.csv(here("Datasets", "Unemployment_Income_Voting_Merged.csv"))
 merged_data_raw$Median.Household.Income <- as.numeric(gsub(",", "", merged_data_raw$Median.Household.Income))
 merged_data_clean <- merged_data_raw[-c(51, 53), -2]
-
+merged_data_clean$State.Name[51] <- "District of Columbia"
 print(merged_data_clean)
 ```
 
@@ -78,7 +78,8 @@ joined_data <- demographics %>%
   left_join(latest_state_totals, by = c("Location" = "Jurisdiction_Residence")) %>%
   left_join(merged_data_clean, by = c("Location" = "State.Name"))
 
-joined_data <- joined_data[-1, ]
+
+joined_data <- joined_data[2:52, ]
 print(head(joined_data))
 glimpse(joined_data)
 ```

@@ -2,7 +2,9 @@
 title: "FinalReport"
 author: "TBD"
 date: "2025-11-04"
-output: pdf_document
+output:
+  html_document:
+    df_print: paged
 ---
 
 ```{r setup, include=FALSE}
@@ -49,18 +51,19 @@ The following are the variables for each of our observations:
 [11] "Walked"                                                  "Taxi, motorcycle, or other"                             
 [13] "Public transportation"                                   "Worked at home"                                         
 [15] "Carpool"                                                 "Drove alone"                                            
-[17] "stateFlagCode"                                           "GunOwnership_PercentageOfHouseholdsThatOwnGuns_pct_2022"
-[19] "GunOwnership_NumOfGunLicenses_num_2022"                  "data_as_of"                                             
-[21] "Group"                                                   "data_period_start"                                      
-[23] "data_period_end"                                         "COVID_deaths"                                           
-[25] "COVID_pct_of_total"                                      "pct_change_wk"                                          
-[27] "pct_diff_wk"                                             "crude_COVID_rate"                                       
-[29] "aa_COVID_rate"                                           "crude_COVID_rate_ann"                                   
-[31] "aa_COVID_rate_ann"                                       "footnote"                                               
-[33] "end_date"                                                "Unemployment.Rate.August.2025"                          
-[35] "Median.Household.Income"                                 "Voting.Results.2016"                                    
-[37] "Voting.Results.2020"                                     "Voting.Results.2024"                                    
-[39] "Electoral.College.Votes"                                
+[17] "GunOwnership_PercentageOfHouseholdsThatOwnGuns_pct_2022"
+                                          
+[18] "GunOwnership_NumOfGunLicenses_num_2022"                  "data_as_of"                                             
+[20] "Group"                                                   "data_period_start"                                      
+[22] "data_period_end"                                         "COVID_deaths"                                           
+[24] "COVID_pct_of_total"                                      "pct_change_wk"                                          
+[26] "pct_diff_wk"                                             "crude_COVID_rate"                                       
+[28] "aa_COVID_rate"                                           "crude_COVID_rate_ann"                                   
+[30] "aa_COVID_rate_ann"                                       "footnote"                                               
+[32] "end_date"                                                "Unemployment.Rate.August.2025"                          
+[34] "Median.Household.Income"                                 "Voting.Results.2016"                                    
+[36] "Voting.Results.2020"                                     "Voting.Results.2024"                                    
+[38] "Electoral.College.Votes"                                
 
 Further data cleaning will be necessary in order to ensure that only the most influential variables are chosen for our logisitic regression model.
 
@@ -69,40 +72,22 @@ box-plots, and numerical summaries of the data, depending on the type of analysi
 visualizations suggest about the hypothesis, model or simulation you are aiming to perform? If you are
 interested in including further visualization, describe them here.
 
-```{r}
-options(scipen = 5)
-plot(joined_data$Median.Household.Income,
-     joined_data$GunOwnership_PercentageOfHouseholdsThatOwnGuns_pct_2022,
-     main = "Gun Ownership vs. Median Household Income by State",
-     xlab = "Median Household Income (USD)",
-     ylab = "Gun Ownership (% of Households)")
+Second, we want to explore the relationships between some of our variables, and see if they ar correlated. If there are correlations between different variables in our data then we can start to gain a clearer idea of how they might influence voting.
 
-abline(lm(GunOwnership_PercentageOfHouseholdsThatOwnGuns_pct_2022 ~ Median.Household.Income, data = joined_data),
-       col = "red", lwd = 2)
+From the plot below we can see the relationship between the median household income and the rate of using public transportation to get to work. From the line of best fit we can tell that there is a relationship between the two variables. The states with higher median household income see higher rates of their workforce using public transportation to work. One thing that sticks out are the two high outliers at the top. New York has a median household income of 84,578 and a public transportation rate of 0.2352, and D.C. has a median household income of 106,287 and a public transportation rate of 0.2290.
+
+```{r, echo = FALSE}
+source("02_func_Plots.r")
+scatterplot(joined_data$Median.Household.Income, joined_data$'Public transportation', "Median Household Income", "Public Transportation")
 ```
 
-```{r}
-plot(joined_data$`Public transportation`,
-     joined_data$aa_COVID_rate,
-     main = "COVID Rate vs. Public Transport Usage by State",
-     xlab = "Percent Using Public Transportation to Work",
-     ylab = "COVID Rate (per 100,000 people)")
-     
-abline(lm(aa_COVID_rate ~ `Public transportation`, data = joined_data), col = "red", lwd = 2)
+When comparing the median household income of a state to the percentage of homes that own guns, we see a very clear trend that indicates that states with a higher median income own less guns, and vice versa.
+```{r, echo=FALSE}
+scatterplot(joined_data$Median.Household.Income, joined_data$GunOwnership_PercentageOfHouseholdsThatOwnGuns_pct_2022, "Median Household Income", "Percentage of Home That Own Guns")
 ```
 
 
-```{r}
-plot(joined_data$Median.Household.Income,
-     joined_data$`Public transportation`,
-     main = "Median Household Income vs. Public Transport Usage by State",
-     xlab = "Median Household Income (USD)",
-     ylab = "Percent Using Public Transportation to Work")
-     
-abline(lm(`Public transportation` ~ Median.Household.Income, data = joined_data), col = "red", lwd = 2)
-```
-
-```{r}
+```{r, echo=FALSE}
 race_data <- c("White", "Black", "Hispanic", "Asian", "American Indian or Alaska Native", "Native Hawaiian or Pacific Islander", "Multiple Races")
 elections <- c("Voting.Results.2016", "Voting.Results.2020", "Voting.Results.2024")
 
@@ -118,13 +103,34 @@ for(year in elections){
 }
 ```
 
+```{r, echo=FALSE}
+comparison_data <- c(
+"GunOwnership_PercentageOfHouseholdsThatOwnGuns_pct_2022", 
+"aa_COVID_rate", 
+"Unemployment.Rate.August.2025", 
+"Median.Household.Income"
+)
+
+for(var in comparison_data){
+  dem_states <- joined_data[joined_data[["Voting.Results.2024"]] == "D", ]
+  rep_states <- joined_data[joined_data[["Voting.Results.2024"]] == "R", ]
+
+  avg_dem <- mean(dem_states[[var]], na.rm = TRUE)
+  avg_rep <- mean(rep_states[[var]], na.rm = TRUE)
+
+  bar_vector <- c(avg_rep, avg_dem)
+  
+  barplot(bar_vector, names.arg = c("Republican", "Democrat"), main = paste("Average", var, "by 2016 Voting"), ylab = var)
+}
+
+```
+
+
+
+
 **Analysis**:
 
 We plan to implement a logistic regression model, while also possibly implemeting a K-Nearest Neighbors model for comparison of performance. We plan to use backwards selection in order to implement and discern only the most influential variables to our model. This way, not only can we build the most accurate model, but we can find the issues and demographics that are most important to how a state might vote. We expect to find that demographic variables such as race and median household income will play a significant role in the way a state votes, it is often that class and ethnic backgrounds demonstrate an affinity for either political party.
-
-
-
-
 
 
 
