@@ -51,7 +51,7 @@ The following are the variables for each of our observations:
 [11] "Walked"                                                  "Taxi, motorcycle, or other"                             
 [13] "Public transportation"                                   "Worked at home"                                         
 [15] "Carpool"                                                 "Drove alone"                                            
-[17] "GunOwnership_PercentageOfHouseholdsThatOwnGuns_pct_2022"
+[17] "PercentageOfHouseholdsThatOwnGuns"
                                           
 [18] "GunOwnership_NumOfGunLicenses_num_2022"                  "data_as_of"                                             
 [20] "Group"                                                   "data_period_start"                                      
@@ -83,9 +83,9 @@ scatterplot(joined_data$Median.Household.Income, joined_data$'Public transportat
 
 When comparing the median household income of a state to the percentage of homes that own guns, we see a very clear trend that indicates that states with a higher median income own less guns, and vice versa.
 ```{r, echo=FALSE}
-scatterplot(joined_data$Median.Household.Income, joined_data$GunOwnership_PercentageOfHouseholdsThatOwnGuns_pct_2022, "Median Household Income", "Percentage of Home That Own Guns")
+scatterplot(joined_data$Median.Household.Income, joined_data$PercentageOfHouseholdsThatOwnGuns, "Median Household Income", "Percentage of Home That Own Guns")
 ```
-
+Next, we can look at the ethnic breakdown of each election, split by states that went red in each election and states that went blue. We can see that for every election the Democrats had less of a proportion of their votes from white voters, and more of a proportion of their votes from minority races. Additionally, although the ethnic breakdowns of each election differ greatly for democratic states vs republican states, the breakdowns barely differ when comparing different years.
 
 ```{r, echo=FALSE}
 race_data <- c("White", "Black", "Hispanic", "Asian", "American Indian or Alaska Native", "Native Hawaiian or Pacific Islander", "Multiple Races")
@@ -102,10 +102,11 @@ for(year in elections){
   pie(avg_race_rep, labels = race_data, main = paste("Republican", year))
 }
 ```
+Lastly, we can compare the average gun ownership percentage, pandemic COVID-19 rate, unemployment rate, and median household income for states that went blue and red in the 2024 election. We can see that states that voted Republican in 2024 have a much higher average gun ownership rate and average COVID-19 rate during the pandemic, and democratic states have a slightly higher average unemployment rate and average median household income.
 
 ```{r, echo=FALSE}
 comparison_data <- c(
-"GunOwnership_PercentageOfHouseholdsThatOwnGuns_pct_2022", 
+"PercentageOfHouseholdsThatOwnGuns", 
 "aa_COVID_rate", 
 "Unemployment.Rate.August.2025", 
 "Median.Household.Income"

@@ -41,6 +41,7 @@ print(commuter_data_wide)
 ```{r}
 gun_ownership_data <- read_csv(here("Datasets", "gun-ownership-by-state-2025.csv"))
 gun_ownership_data <- gun_ownership_data[,-1]
+names(gun_ownership_data)[2] <- "PercentageOfHouseholdsThatOwnGuns"
 print(gun_ownership_data)
 ```
 
