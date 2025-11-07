@@ -61,6 +61,8 @@ latest_state_totals <- covid_deaths_raw %>%
 
 print(latest_state_totals)
 ```
+
+
 ```{r}
 merged_data_raw <- read.csv(here("Datasets", "Unemployment_Income_Voting_Merged.csv"))
 merged_data_clean <- merged_data_raw[-c(51, 53), -2]
