@@ -85,4 +85,13 @@ print(head(joined_data))
 glimpse(joined_data)
 ```
 
+```{r save-data}
+if (!dir.exists(here("processed_data"))) {
+  dir.create(here("processed_data"))
+}
+
+save(joined_data, file = here("processed_data", "merged_data.RData"))
+```
+
+
 

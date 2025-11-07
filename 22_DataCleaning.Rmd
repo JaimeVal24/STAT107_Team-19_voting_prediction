@@ -1,0 +1,78 @@
+```{r load-data}
+library(here)
+
+source(here("00_requirements.R")) 
+source(here("01_funct_DataCleaning.R")) 
+
+load(here("processed_data", "merged_data.RData"))
+
+print("Successfully loaded 'joined_data' from file.")
+glimpse(joined_data) 
+```
+First, we will get rid of columns that provide will provide no value to our model. The columns are:
+
+  "data_as_of", 
+  "Group", 
+  "data_period_start", 
+  "data_period_end", 
+  "end_date",
+  "pct_change_wk",
+  "pct_diff_wk",
+  "footnote",
+  "Footnotes", 
+  "stateFlagCode"
+
+
+```{r clean-data}
+# Define all columns you want to get rid of
+cols_to_drop <- c(
+  "data_as_of", 
+  "Group", 
+  "data_period_start", 
+  "data_period_end", 
+  "end_date",
+  "pct_change_wk",
+  "pct_diff_wk",
+  "footnote",
+  "Footnotes", 
+  "stateFlagCode"
+)
+
+cleaned_data <- remove_cols(joined_data, cols_to_drop)
+
+print("Columns removed.")
+glimpse(cleaned_data)
+```
+
+Next, we will convert use our function "na_to_zero" on some numerical columns in order to turn some of the current NA values into 0 values. This will make the data more manageable for our future model. It is also important to note that for the column which we apply this to, we can assume that a value of NA is not dissimilar from 0.
+
+```{r}
+cleaned_data <- na_to_zero(cleaned_data, "American Indian or Alaska Native")
+cleaned_data <- na_to_zero(cleaned_data, "Native Hawaiian or Pacific Islander")
+cleaned_data <- na_to_zero(cleaned_data, "PercentageOfHouseholdsThatOwnGuns")
+```
+
+
+Next, we will turn certain columns from character values to factor values.
+```{r}
+cleaned_data <- to_factor(cleaned_data, "Voting.Results.2016")
+cleaned_data <- to_factor(cleaned_data, "Voting.Results.2020")
+cleaned_data <- to_factor(cleaned_data, "Voting.Results.2024")
+
+glimpse(select(cleaned_data, 
+               "Voting.Results.2016", 
+               "Voting.Results.2020", 
+               "Voting.Results.2024"))
+```
+
+```{r}
+glimpse(cleaned_data)
+```
+
+```{r}
+save(cleaned_data, file = here("processed_data", "cleaned_data.RData"))
+```
+
+
+
+
