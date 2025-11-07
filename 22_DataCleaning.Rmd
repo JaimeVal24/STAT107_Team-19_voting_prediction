@@ -23,8 +23,7 @@ First, we will get rid of columns that provide will provide no value to our mode
   "stateFlagCode"
 
 
-```{r clean-data}
-# Define all columns you want to get rid of
+```{r}
 cols_to_drop <- c(
   "data_as_of", 
   "Group", 
