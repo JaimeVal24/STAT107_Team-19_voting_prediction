@@ -2,6 +2,7 @@
 A predictive model of USA presidential election by states.
 
 **How to recreate our process**
+
 Firstly, you can simply clone the repository into your local machine. You must then run the 21_DataProcessing.Rmd file in order to load the data into your environment. You can then run 22_DataCleaning.Rmd to clean the data. Afterwards, you can run the FinalReport.Rmd file to observe our vizualizations and our future plan for this project.
 
 
