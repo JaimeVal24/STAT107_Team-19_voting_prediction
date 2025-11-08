@@ -3,9 +3,9 @@ title: "FinalReport"
 author: "TBD"
 date: "2025-11-04"
 output:
+  pdf_document: default
   html_document:
     df_print: paged
-  pdf_document: default
 ---
 
 ```{r setup, include=FALSE}
@@ -138,7 +138,7 @@ We can compare the average gun ownership percentage, pandemic COVID-19 rate, une
 ```{r, echo=FALSE}
 selected_vars <- c(
   "COVID_deaths",
-  "GunOwnership_PercentageOfHouseholdsThatOwnGuns_pct_2022",
+  "PercentageOfHouseholdsThatOwnGuns",  # <-- This line is corrected
   "White"
 )
 
@@ -166,7 +166,7 @@ Individual Contributions are as follows:
 Evan - Helped contribute to data cleaning process by merging a set of simple data sets manually, loading and cleaning them, then merging them with the main data set, as well as some cleaning of the merged data frame. Created and analyzed comparative data visualizations using loops and functions: two scatterplots, six related pie charts, and four related bar graphs.
 
 
-Contributions:
+**Contributions:**
 
 Jaime Valencia Lopez: Wrote 21_DataProcessing.Rmd, 22_DataCleaning.Rmd, 01_funct_DataCleaning.R, FinalReport and README.md.
 
