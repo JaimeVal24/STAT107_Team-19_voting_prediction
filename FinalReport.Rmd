@@ -3,12 +3,21 @@ title: "FinalReport"
 author: "TBD"
 date: "2025-11-04"
 output:
+  pdf_document: default
   html_document:
     df_print: paged
 ---
 
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE)
+library(here)
+```
+
+```{r load-data, include=FALSE}
+source(here("00_requirements.R"))
+source(here("02_func_Plots.r")) 
+load(here("processed_data", "cleaned_data.RData"))
+joined_data <- cleaned_data
 ```
 
 ## R Markdown
@@ -21,11 +30,11 @@ In this project, we aim to create a predictive model based on State data that ai
 
 **Introduction:**
 
-The purpose of this analysis is to find certain how certain characteristcs in indivudals, and how their demographic background impacts their voting tendencies. By creating a succesful predictive model, one is able to act on these predictions, wether it is to change them or to ensure that they happen. Knowing which states have a chance of fillping to either political party is also extremely important, as it is in these states that presidential candidates have the hardest battles. Not only can this benefit politicians, but also the voters, as the model highlights what factors are more imporant to the way in which they vote, and will therefore force these politicians to adress these factors. If we were to find that unemployment rate seems to be heavily associated with a voter voting for the Democratic party, the democratic party should aim to adresss their constituents and lower unemployment.
+The purpose of this analysis is to find certain how certain characteristics in individuals, and how their demographic background impacts their voting tendencies. By creating a successful predictive model, one is able to act on these predictions, whether it is to change them or to ensure that they happen. Knowing which states have a chance of flipping to either political party is also extremely important, as it is in these states that presidential candidates have the hardest battles. Not only can this benefit politicians, but also the voters, as the model highlights what factors are more important to the way in which they vote, and will therefore force these politicians to address these factors. If we were to find that unemployment rate seems to be heavily associated with a voter voting for the Democratic party, the democratic party should aim to address their constituents and lower unemployment.
 
 **Data**: 
 
-The data available is mostly demographic data relating to the 50 states, meaning that there are 50 observations (plus territories and overall USA data that will not be used). The datasets are as follows:
+The data available is mostly demographic data relating to the 50 states, meaning that there are 50 observations (plus territories and overall USA data that will not be used). The data sets are as follows:
 
 Demographic Data: (https://www.kff.org/state-health-policy-data/state-indicator/distribution-by-raceethnicity/?currentTimeframe=0&sortModel=%7B%22colId%22:%22Location%22,%22sort%22:%22asc%22%7D)
 
@@ -65,19 +74,16 @@ The following are the variables for each of our observations:
 [36] "Voting.Results.2020"                                     "Voting.Results.2024"                                    
 [38] "Electoral.College.Votes"                                
 
-Further data cleaning will be necessary in order to ensure that only the most influential variables are chosen for our logisitic regression model.
+Data cleaning consisted of removing columns that were not necessary and could not be used for our future model. This included dates, fully empty columns, etc. We then replaced NA values in numerical columns with 0, as it will allow for the data set to be more manageable when it comes to implementing our model. Lastly, we turned the character columns  of voting results from 2016, 2020 and 2024 into factor values.
 
-**Visualization**: Provide preliminary visualization in the form of histograms, density plots, scatter plots,
-box-plots, and numerical summaries of the data, depending on the type of analysis. What do these
-visualizations suggest about the hypothesis, model or simulation you are aiming to perform? If you are
-interested in including further visualization, describe them here.
+**Visualization**:
 
-Second, we want to explore the relationships between some of our variables, and see if they ar correlated. If there are correlations between different variables in our data then we can start to gain a clearer idea of how they might influence voting.
+We want to explore the relationships between some of our variables, and see if they ar correlated. If there are correlations between different variables in our data then we can start to gain a clearer idea of how they might influence voting.
 
 From the plot below we can see the relationship between the median household income and the rate of using public transportation to get to work. From the line of best fit we can tell that there is a relationship between the two variables. The states with higher median household income see higher rates of their workforce using public transportation to work. One thing that sticks out are the two high outliers at the top. New York has a median household income of 84,578 and a public transportation rate of 0.2352, and D.C. has a median household income of 106,287 and a public transportation rate of 0.2290.
 
 ```{r, echo = FALSE}
-source("02_func_Plots.r")
+source(here("02_func_Plots.r"))
 scatterplot(joined_data$Median.Household.Income, joined_data$'Public transportation', "Median Household Income", "Public Transportation")
 ```
 
@@ -148,7 +154,7 @@ Lastly, we can create box plots to understand  the distribution of the datasets 
 
 **Analysis**:
 
-We plan to implement a logistic regression model, while also possibly implemeting a K-Nearest Neighbors model for comparison of performance. We plan to use backwards selection in order to implement and discern only the most influential variables to our model. This way, not only can we build the most accurate model, but we can find the issues and demographics that are most important to how a state might vote. We expect to find that demographic variables such as race and median household income will play a significant role in the way a state votes, it is often that class and ethnic backgrounds demonstrate an affinity for either political party.
+We plan to implement a logistic regression model, while also possibly implementing a K-Nearest Neighbors model for comparison of performance. We plan to use backwards selection in order to implement and discern only the most influential variables to our model. This way, not only can we build the most accurate model, but we can find the issues and demographics that are most important to how a state might vote. We expect to find that demographic variables such as race and median household income will play a significant role in the way a state votes, it is often that class and ethnic backgrounds demonstrate an affinity for either political party.
 
 
 

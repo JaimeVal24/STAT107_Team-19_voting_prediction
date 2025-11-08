@@ -5,12 +5,16 @@ library(here)
 source(here("00_requirements.R"))
 ```
 
+First, we start the data set with the demographics data set.
+
 ```{r}
 demographics = read_csv(
-  here("Datasets", "demographics.csv"), 
+  here("Datasets", "demographics.csv"),
+  # First two lines are unnecessary
   skip = 2,
   na = "N/A",
   
+  # Data includes footnotes
   col_types = cols(
     Footnotes = col_skip() 
   )
@@ -19,18 +23,19 @@ demographics = read_csv(
 print(demographics)
 ```
 
+Then, we add the commuter data to the overall data set. For this, we must transform the data set in order to follow the overall format where our observations are each state and the columns are variables of each state.
+
 ```{r}
+# --- Load and clean commuter data ---
 commuter_data_raw <- read_tsv(here("Datasets", "state_commuter_mode.csv")) %>%
   
-  rename(Share = "Commute mode share (percent)")
+  rename(Share = "Commute mode share (percent)")  # Simplify column name
 
 commuter_data_wide <- commuter_data_raw %>%
   
-  filter(Year == 2023) %>%
-  
-  select(-Year) %>%
-
-  pivot_wider(
+  filter(Year == 2023) %>%   # Keep only the most recent year
+  select(-Year) %>%          # Drop the year column
+  pivot_wider(               # Reshape from long to wide format
     names_from = Mode,
     values_from = Share
   )
@@ -38,21 +43,30 @@ commuter_data_wide <- commuter_data_raw %>%
 print(commuter_data_wide)
 ```
 
+Next, we read in the gun ownership data.
+
 ```{r}
 gun_ownership_data <- read_csv(here("Datasets", "gun-ownership-by-state-2025.csv"))
+
+# We will drop the first column, as it is not necessary.
 gun_ownership_data <- gun_ownership_data[,-1]
+
+# We will create a new name to increase clarity
 names(gun_ownership_data)[2] <- "PercentageOfHouseholdsThatOwnGuns"
 print(gun_ownership_data)
 ```
 
 
+We will not aim to join the "covid_deaths" data set into our current overall data set.
+
 ```{r}
 covid_deaths_raw <- read_csv(here("Datasets", "covid_deaths.csv"))
 
+# We can extract the state names to make sure it follows the current structure
 state_names <- unique(demographics$Location)
 
+# Next, we will need to extract the rolling total from each state, as we are only interested in the total death count
 latest_state_totals <- covid_deaths_raw %>%
-  
   filter(Jurisdiction_Residence %in% state_names) %>%
   mutate(end_date = mdy(data_period_end)) %>%
   group_by(Jurisdiction_Residence) %>%
@@ -63,6 +77,7 @@ latest_state_totals <- covid_deaths_raw %>%
 print(latest_state_totals)
 ```
 
+Now, we will read the Unemployment_Income_Voting_Merged.csv data set and join it to complete our joined dataset.
 
 ```{r}
 merged_data_raw <- read.csv(here("Datasets", "Unemployment_Income_Voting_Merged.csv"))
@@ -84,5 +99,17 @@ joined_data <- joined_data[2:52, ]
 print(head(joined_data))
 glimpse(joined_data)
 ```
+
+
+Here we will save the data set for future cleaning.
+
+```{r save-data}
+if (!dir.exists(here("processed_data"))) {
+  dir.create(here("processed_data"))
+}
+
+save(joined_data, file = here("processed_data", "merged_data.RData"))
+```
+
 
 
