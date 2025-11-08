@@ -7,7 +7,6 @@
    - Download or clone this repository.  
    - Open the `.Rproj` file in RStudio (this makes all the file paths work).  
    - Run `00_requirements.R` to load all the needed packages.  
-     - If something is missing, install it (e.g., `install.packages("dplyr")`).
 
 2. **Run the Scripts in Order**
    - Knit `21_DataProcessing.Rmd` → combines raw data and saves `merged_data.RData`.  
