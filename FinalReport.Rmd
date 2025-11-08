@@ -24,6 +24,8 @@ joined_data <- cleaned_data
 
 **Title:** A Predictive Model of USA Presidential Election by States.
 
+*Link to the Github: * https://github.com/JaimeVal24/STAT107_Final_Project
+
 *Abstract:* 
 
 In this project, we aim to create a predictive model based on State data that aims to accurately predict the party that a state will vote for in the presidential electionbased on demographic data and past voting history. Our question is "Are we able to somewhat accurately predict a states voting tendency based on demographic data using logistic regression? If so, which variables are most important to the model?". **Conclusion to be done**
@@ -156,5 +158,9 @@ Lastly, we can create box plots to understand  the distribution of the datasets 
 
 We plan to implement a logistic regression model, while also possibly implementing a K-Nearest Neighbors model for comparison of performance. We plan to use backwards selection in order to implement and discern only the most influential variables to our model. This way, not only can we build the most accurate model, but we can find the issues and demographics that are most important to how a state might vote. We expect to find that demographic variables such as race and median household income will play a significant role in the way a state votes, it is often that class and ethnic backgrounds demonstrate an affinity for either political party.
 
+
+Contributions:
+
+Jaime Valencia Lopez: Wrote 21_DataProcessing.Rmd, 22_DataCleaning.Rmd, 01_funct_DataCleaning.R, FinalReport and README.md.
 
 
