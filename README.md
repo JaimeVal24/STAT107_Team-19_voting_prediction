@@ -1,8 +1,18 @@
 # A predictive model of USA presidential election by states.
 
-**How to recreate our process**
 
-Firstly, you can simply clone the repository into your local machine. You must then run the 21_DataProcessing.Rmd file in order to load the data into your environment. You can then run 22_DataCleaning.Rmd to clean the data. Afterwards, you can run the FinalReport.Rmd file to observe our vizualizations and our future plan for this project.
+### How to Run Everything
+
+1. **Set Up**
+   - Download or clone this repository.  
+   - Open the `.Rproj` file in RStudio (this makes all the file paths work).  
+   - Run `00_requirements.R` to load all the needed packages.  
+     - If something is missing, install it (e.g., `install.packages("dplyr")`).
+
+2. **Run the Scripts in Order**
+   - Knit `21_DataProcessing.Rmd` → combines raw data and saves `merged_data.RData`.  
+   - Knit `22_DataCleaning.Rmd` → cleans the data and saves `cleaned_data.RData`.  
+   - Knit `FinalReport.Rmd` → creates the final report (`FinalReport.pdf`).
 
 
 **FIlE STRUCTURE**
