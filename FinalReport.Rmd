@@ -3,9 +3,9 @@ title: "FinalReport"
 author: "TBD"
 date: "2025-11-04"
 output:
-  pdf_document: default
   html_document:
     df_print: paged
+  pdf_document: default
 ---
 
 ```{r setup, include=FALSE}
@@ -80,22 +80,21 @@ Data cleaning consisted of removing columns that were not necessary and could no
 
 We want to explore the relationships between some of our variables, and see if they ar correlated. If there are correlations between different variables in our data then we can start to gain a clearer idea of how they might influence voting.
 
-From the plot below we can see the relationship between the median household income and the rate of using public transportation to get to work. From the line of best fit we can tell that there is a relationship between the two variables. The states with higher median household income see higher rates of their workforce using public transportation to work. One thing that sticks out are the two high outliers at the top. New York has a median household income of 84,578 and a public transportation rate of 0.2352, and D.C. has a median household income of 106,287 and a public transportation rate of 0.2290.
-
 ```{r, echo = FALSE}
 source(here("02_func_Plots.r"))
 scatterplot(joined_data$Median.Household.Income, joined_data$'Public transportation', "Median Household Income", "Public Transportation")
 ```
+From the plot above we can see the relationship between the median household income and the rate of using public transportation to get to work. From the line of best fit we can tell that there is a relationship between the two variables. The states with higher median household income see higher rates of their workforce using public transportation to work. One thing that sticks out are the two high outliers at the top. New York has a median household income of 84,578 and a public transportation rate of 0.2352, and D.C. has a median household income of 106,287 and a public transportation rate of 0.2290.
 
-When comparing the median household income of a state to the percentage of homes that own guns, we see a very clear trend that indicates that states with a higher median income own less guns, and vice versa.
 ```{r, echo=FALSE}
 scatterplot(joined_data$Median.Household.Income, joined_data$PercentageOfHouseholdsThatOwnGuns, "Median Household Income", "Percentage of Home That Own Guns")
 ```
-Next, we can look at the ethnic breakdown of each election, split by states that went red in each election and states that went blue. We can see that for every election the Democrats had less of a proportion of their votes from white voters, and more of a proportion of their votes from minority races. Additionally, although the ethnic breakdowns of each election differ greatly for democratic states vs republican states, the breakdowns barely differ when comparing different years.
+When comparing the median household income of a state to the percentage of homes that own guns, we see a very clear trend that indicates that states with a higher median income own less guns, and vice versa.
 
 ```{r, echo=FALSE}
 race_data <- c("White", "Black", "Hispanic", "Asian", "American Indian or Alaska Native", "Native Hawaiian or Pacific Islander", "Multiple Races")
 elections <- c("Voting.Results.2016", "Voting.Results.2020", "Voting.Results.2024")
+par(mfrow = c(3, 2), mar = c(0, 0, 1, 0))
 
 for(year in elections){
   dem_states <- joined_data[joined_data[[year]] == "D", ]
@@ -104,11 +103,11 @@ for(year in elections){
   avg_race_dem <- colMeans(dem_states[, race_data], na.rm = TRUE)
   avg_race_rep <- colMeans(rep_states[, race_data], na.rm = TRUE)
   
-  pie(avg_race_dem, labels = race_data, main = paste("Democratic", year))
-  pie(avg_race_rep, labels = race_data, main = paste("Republican", year))
+  pie(avg_race_dem, labels = race_data, main = paste("Democratic", year), cex = 0.6)
+  pie(avg_race_rep, labels = race_data, main = paste("Republican", year), cex = 0.6)
 }
 ```
-We can compare the average gun ownership percentage, pandemic COVID-19 rate, unemployment rate, and median household income for states that went blue and red in the 2024 election. We can see that states that voted Republican in 2024 have a much higher average gun ownership rate and average COVID-19 rate during the pandemic, and democratic states have a slightly higher average unemployment rate and average median household income.
+Next, we can look at the ethnic breakdown of each election, split by states that went red in each election and states that went blue. We can see that for every election the Democrats had less of a proportion of their votes from white voters, and more of a proportion of their votes from minority races. Additionally, although the ethnic breakdowns of each election differ greatly for democratic states vs republican states, the breakdowns barely differ when comparing different years.
 
 ```{r, echo=FALSE}
 comparison_data <- c(
@@ -117,7 +116,7 @@ comparison_data <- c(
 "Unemployment.Rate.August.2025", 
 "Median.Household.Income"
 )
-
+par(mfrow = c (2, 2), mar = c(2, 2, 3, 2))
 for(var in comparison_data){
   dem_states <- joined_data[joined_data[["Voting.Results.2024"]] == "D", ]
   rep_states <- joined_data[joined_data[["Voting.Results.2024"]] == "R", ]
@@ -127,10 +126,12 @@ for(var in comparison_data){
 
   bar_vector <- c(avg_rep, avg_dem)
   
-  barplot(bar_vector, names.arg = c("Republican", "Democrat"), main = paste("Average", var, "by 2016 Voting"), ylab = var)
+  barplot(bar_vector, names.arg = c("Republican", "Democrat"), main = paste("Average", var, "by 2016 Voting"), ylab = var, cex.main = 0.8)
 }
-
+par(mfrow = c (1, 1))
 ```
+
+We can compare the average gun ownership percentage, pandemic COVID-19 rate, unemployment rate, and median household income for states that went blue and red in the 2024 election. We can see that states that voted Republican in 2024 have a much higher average gun ownership rate and average COVID-19 rate during the pandemic, and democratic states have a slightly higher average unemployment rate and average median household income.
 
 ```{r, echo=FALSE}
 selected_vars <- c(
@@ -150,11 +151,17 @@ for (col_name in selected_vars) {
   mtext(explanation, side = 1, line = 1, cex = 0.7)
 }
 ```
-Lastly, we can create box plots to understand  the distribution of the datasets through their median, spread, and overall range. They highlight the central tendency, variability, and possible outliers and will give us more insight into our specific data and the validity of it as we are able to identify any skewed distributions. These speicifc ones are just a few of all of the box plots we can create for each varaible introduced. 
+Lastly, we can create box plots to understand  the distribution of the data sets through their median, spread, and overall range. They highlight the central tendency, variability, and possible outliers and will give us more insight into our specific data and the validity of it as we are able to identify any skewed distributions. These specific ones are just a few of all of the box plots we can create for each variable introduced. 
 
 **Analysis**:
 
 We plan to implement a logistic regression model, while also possibly implementing a K-Nearest Neighbors model for comparison of performance. We plan to use backwards selection in order to implement and discern only the most influential variables to our model. This way, not only can we build the most accurate model, but we can find the issues and demographics that are most important to how a state might vote. We expect to find that demographic variables such as race and median household income will play a significant role in the way a state votes, it is often that class and ethnic backgrounds demonstrate an affinity for either political party.
+
+Once we construct and test our model, we can construct more data visualizations to demonstrate which variables have the largest effect on a states voting patterns, beyond basic correlations.
+
+Individual Contributions are as follows:
+
+Evan - Helped contribute to data cleaning process by merging a set of simple data sets manually, loading and cleaning them, then merging them with the main data set, as well as some cleaning of the merged data frame. Created and analyzed comparative data visualizations using loops and functions: two scatterplots, six related pie charts, and four related bar graphs.
 
 
 
