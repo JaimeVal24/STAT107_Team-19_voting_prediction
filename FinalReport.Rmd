@@ -1,6 +1,6 @@
 ---
 title: "FinalReport"
-author: "TBD"
+author: "Jaime Valencia Lopez, Evan Silzle, and Sumukh Chanda"
 date: "2025-11-04"
 output:
   pdf_document: default
@@ -166,7 +166,7 @@ Individual Contributions are as follows:
 
 **Contributions:**
 
-Jaime Valencia Lopez: Wrote 21_DataProcessing.Rmd, 22_DataCleaning.Rmd, 01_funct_DataCleaning.R, FinalReport and README.md.
+Jaime Valencia Lopez: Wrote 21_DataProcessing.Rmd (merged the first four datasets and added the descriptions), 22_DataCleaning.Rmd (all code and descriptions), 01_funct_DataCleaning.R, FinalReport (excluding vizualizations) and README.md.
 
 Evan Silzle: Wrote 02_func_PLots.r, Helped contribute to data cleaning process by merging a set of simple data sets manually, loading and cleaning them, then merging them with the main data set, as well as some cleaning of the merged data frame. Created and analyzed comparative data visualizations using loops and functions: two scatterplots, six related pie charts, and four related bar graphs.
 
