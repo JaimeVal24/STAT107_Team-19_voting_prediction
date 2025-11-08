@@ -170,3 +170,5 @@ Jaime Valencia Lopez: Wrote 21_DataProcessing.Rmd, 22_DataCleaning.Rmd, 01_funct
 
 Evan Silzle: Wrote 02_func_PLots.r, Helped contribute to data cleaning process by merging a set of simple data sets manually, loading and cleaning them, then merging them with the main data set, as well as some cleaning of the merged data frame. Created and analyzed comparative data visualizations using loops and functions: two scatterplots, six related pie charts, and four related bar graphs.
 
+Sumukh Chanda: Helped contribute to the idea and worked on the data visualization models. 
+
