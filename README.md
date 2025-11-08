@@ -9,9 +9,9 @@
    - Run `00_requirements.R` to load all the needed packages.  
 
 2. **Run the Scripts in Order**
-   - Knit `21_DataProcessing.Rmd` → combines raw data and saves `merged_data.RData`.  
-   - Knit `22_DataCleaning.Rmd` → cleans the data and saves `cleaned_data.RData`.  
-   - Knit `FinalReport.Rmd` → creates the final report (`FinalReport.pdf`).
+   - Run `21_DataProcessing.Rmd`, combines raw data and saves `merged_data.RData`.  
+   - Run `22_DataCleaning.Rmd`, cleans the data and saves `cleaned_data.RData`.  
+   - Run `FinalReport.Rmd`,  creates the final report (`FinalReport.pdf`).
 
 
 **FIlE STRUCTURE**
