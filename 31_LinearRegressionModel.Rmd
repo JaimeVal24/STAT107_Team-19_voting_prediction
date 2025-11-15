@@ -1,0 +1,57 @@
+```{r load-data}
+library(here)
+
+source(here("00_requirements.R")) 
+
+load(here("processed_data", "cleaned_data.RData"))
+```
+
+```{r}
+glimpse(cleaned_data)
+```
+
+```{r}
+cleaned_data_clean <- cleaned_data %>%
+  clean_names()
+
+cleaned_data_clean <- cleaned_data_clean %>%
+  mutate(voting_results_2024 = as.factor(voting_results_2024))
+
+cleaned_data_clean$voting_results_2024 <- relevel(cleaned_data_clean$voting_results_2024, ref = "D")
+
+set.seed(123) 
+
+data_split <- initial_split(cleaned_data_clean, prop = 0.60, strata = voting_results_2024)
+
+train_data <- training(data_split)
+test_data  <- testing(data_split)
+
+
+model_logistic <- glm(
+  voting_results_2024 ~ median_household_income + 
+                        unemployment_rate_august_2025 + 
+                        white + 
+                        black + 
+                        hispanic,
+  data = train_data,
+  family = "binomial"
+)
+
+# See the summary of the model (coefficients, p-values, etc.)
+summary(model_logistic)
+
+probabilities <- predict(model_logistic, newdata = test_data, type = "response")
+
+predictions <- ifelse(probabilities > 0.5, "R", "D")
+
+confusion_matrix <- table(
+  Predicted = predictions, 
+  Actual = test_data$voting_results_2024
+)
+
+print(confusion_matrix)
+
+accuracy <- sum(diag(confusion_matrix)) / sum(confusion_matrix)
+
+print(paste("Model Accuracy on Test Data:", round(accuracy * 100, 2), "%"))
+```

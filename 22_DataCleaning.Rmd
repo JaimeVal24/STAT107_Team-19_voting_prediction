@@ -34,7 +34,8 @@ cols_to_drop <- c(
   "pct_diff_wk",
   "footnote",
   "Footnotes", 
-  "stateFlagCode"
+  "stateFlagCode",
+  "total"
 )
 
 cleaned_data <- remove_cols(joined_data, cols_to_drop)
