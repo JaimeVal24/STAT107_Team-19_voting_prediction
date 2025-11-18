@@ -8,3 +8,4 @@ plot(var1, var2,
 
 abline(lm(var2 ~ var1, data = joined_data), col = "red", lwd = 2)
 }
+

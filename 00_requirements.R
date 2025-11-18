@@ -22,3 +22,8 @@ if (!require(janitor)) {
   install.packages("janitor")
   library(janitor)
 }
+
+if (!require(glmnet)) {
+  install.packages("glmnet")
+  library(glmnet)
+}
