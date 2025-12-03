@@ -27,3 +27,13 @@ if (!require(glmnet)) {
   install.packages("glmnet")
   library(glmnet)
 }
+
+if (!require(caret)) {
+  install.packages("caret")
+  library(caret)
+}
+
+if (!require(olsrr)) {
+  install.packages("olsrr")
+  library(olsrr)
+}

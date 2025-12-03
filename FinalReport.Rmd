@@ -94,75 +94,135 @@ scatterplot(joined_data$Median.Household.Income, joined_data$PercentageOfHouseho
 When comparing the median household income of a state to the percentage of homes that own guns, we see a very clear trend that indicates that states with a higher median income own less guns, and vice versa.
 
 ```{r, echo=FALSE}
-race_data <- c("White", "Black", "Hispanic", "Asian", "American Indian or Alaska Native", "Native Hawaiian or Pacific Islander", "Multiple Races")
-elections <- c("Voting.Results.2016", "Voting.Results.2020", "Voting.Results.2024")
-par(mfrow = c(3, 2), mar = c(0, 0, 1, 0))
+# race_data <- c("White", "Black", "Hispanic", "Asian", "American Indian or Alaska Native", "Native Hawaiian or Pacific Islander", "Multiple Races")
+# elections <- c("Voting.Results.2016", "Voting.Results.2020", "Voting.Results.2024")
+# par(mfrow = c(3, 2), mar = c(0, 0, 1, 0))
 
-for(year in elections){
-  dem_states <- joined_data[joined_data[[year]] == "D", ]
-  rep_states <- joined_data[joined_data[[year]] == "R", ]
-
-  avg_race_dem <- colMeans(dem_states[, race_data], na.rm = TRUE)
-  avg_race_rep <- colMeans(rep_states[, race_data], na.rm = TRUE)
+# for(year in elections){
+#   dem_states <- joined_data[joined_data[[year]] == "D", ]
+#   rep_states <- joined_data[joined_data[[year]] == "R", ]
+# 
+#   avg_race_dem <- colMeans(dem_states[, race_data], na.rm = TRUE)
+#   avg_race_rep <- colMeans(rep_states[, race_data], na.rm = TRUE)
   
-  pie(avg_race_dem, labels = race_data, main = paste("Democratic", year), cex = 0.6)
-  pie(avg_race_rep, labels = race_data, main = paste("Republican", year), cex = 0.6)
-}
+#   pie(avg_race_dem, labels = race_data, main = paste("Democratic", year), cex = 0.6)
+#    pie(avg_race_rep, labels = race_data, main = paste("Republican", year), cex = 0.6)
+#}
 ```
 Next, we can look at the ethnic breakdown of each election, split by states that went red in each election and states that went blue. We can see that for every election the Democrats had less of a proportion of their votes from white voters, and more of a proportion of their votes from minority races. Additionally, although the ethnic breakdowns of each election differ greatly for democratic states vs republican states, the breakdowns barely differ when comparing different years.
 
 ```{r, echo=FALSE}
-comparison_data <- c(
-"PercentageOfHouseholdsThatOwnGuns", 
-"aa_COVID_rate", 
-"Unemployment.Rate.August.2025", 
-"Median.Household.Income"
-)
-par(mfrow = c (2, 2), mar = c(2, 2, 3, 2))
-for(var in comparison_data){
-  dem_states <- joined_data[joined_data[["Voting.Results.2024"]] == "D", ]
-  rep_states <- joined_data[joined_data[["Voting.Results.2024"]] == "R", ]
-
-  avg_dem <- mean(dem_states[[var]], na.rm = TRUE)
-  avg_rep <- mean(rep_states[[var]], na.rm = TRUE)
-
-  bar_vector <- c(avg_rep, avg_dem)
-  
-  barplot(bar_vector, names.arg = c("Republican", "Democrat"), main = paste("Average", var, "by 2016 Voting"), ylab = var, cex.main = 0.8)
-}
-par(mfrow = c (1, 1))
+# comparison_data <- c(
+# "PercentageOfHouseholdsThatOwnGuns", 
+# "aa_COVID_rate", 
+# "Unemployment.Rate.August.2025", 
+# "Median.Household.Income"
+# )
+# par(mfrow = c (2, 2), mar = c(2, 2, 3, 2))
+# for(var in comparison_data){
+#   dem_states <- joined_data[joined_data[["Voting.Results.2024"]] == "D", ]
+#   rep_states <- joined_data[joined_data[["Voting.Results.2024"]] == "R", ]
+# 
+#   avg_dem <- mean(dem_states[[var]], na.rm = TRUE)
+#   avg_rep <- mean(rep_states[[var]], na.rm = TRUE)
+# 
+#   bar_vector <- c(avg_rep, avg_dem)
+#   
+#  barplot(bar_vector, names.arg = c("Republican", "Democrat"), main = paste("Average", var, "by 2016 Voting"), ylab = var, cex.main = 0.8)
+#}
+# par(mfrow = c (1, 1))
 ```
 
 We can compare the average gun ownership percentage, pandemic COVID-19 rate, unemployment rate, and median household income for states that went blue and red in the 2024 election. We can see that states that voted Republican in 2024 have a much higher average gun ownership rate and average COVID-19 rate during the pandemic, and democratic states have a slightly higher average unemployment rate and average median household income.
 
 ```{r, echo=FALSE}
-selected_vars <- c(
-  "COVID_deaths",
-  "PercentageOfHouseholdsThatOwnGuns",  # <-- This line is corrected
-  "White"
-)
-
-for (col_name in selected_vars) {
-  boxplot(joined_data[[col_name]],
-          main = paste("Distribution of", col_name),
-          ylab = paste("Values of", col_name))
-  grid(nx = NA, ny = NULL)
-  explanation <- paste(
-    "This boxplot shows the spread and variability of", col_name, "across states."
-  )
-  mtext(explanation, side = 1, line = 1, cex = 0.7)
-}
+# selected_vars <- c(
+#   "COVID_deaths",
+#   "PercentageOfHouseholdsThatOwnGuns",  # <-- This line is corrected
+#   "White"
+# )
+# 
+# for (col_name in selected_vars) {
+#   boxplot(joined_data[[col_name]],
+#           main = paste("Distribution of", col_name),
+#           ylab = paste("Values of", col_name))
+#   grid(nx = NA, ny = NULL)
+#   explanation <- paste(
+#     "This boxplot shows the spread and variability of", col_name, "across states."
+#   )
+#   mtext(explanation, side = 1, line = 1, cex = 0.7)
+# }
 ```
 Lastly, we can create box plots to understand  the distribution of the data sets through their median, spread, and overall range. They highlight the central tendency, variability, and possible outliers and will give us more insight into our specific data and the validity of it as we are able to identify any skewed distributions. These specific ones are just a few of all of the box plots we can create for each variable introduced. 
 
 **Analysis**:
 
-We plan to implement a logistic regression model, while also possibly implementing a K-Nearest Neighbors model for comparison of performance. We plan to use backwards selection in order to implement and discern only the most influential variables to our model. This way, not only can we build the most accurate model, but we can find the issues and demographics that are most important to how a state might vote. We expect to find that demographic variables such as race and median household income will play a significant role in the way a state votes, it is often that class and ethnic backgrounds demonstrate an affinity for either political party.
+Our modeling strategy focused on constructing a logistic regression model that maximized predictive accuracy while maintaining interpretability. To validate our results, we employed a cross-validation technique by randomly splitting our 50-state dataset into a training set (75%) and a testing set (25%). This separation ensured that the model was trained on roughly 37 states and then evaluated on 13 "unseen" states, preventing the model from simply memorizing the data and ensuring it could generalize to new observations.
 
-Once we construct and test our model, we can construct more data visualizations to demonstrate which variables have the largest effect on a states voting patterns, beyond basic correlations.
+**Variable Selection (LASSO Regression)**
 
-Individual Contributions are as follows:
+Our initial dataset contained over 25 potential predictor variables, ranging from transportation methods to racial demographics. To determine which variables were most relevant without succumbing to overfitting, we implemented *LASSO (Least Absolute Shrinkage and Selection Operator) Regression*. LASSO is a regularization technique that improves model accuracy by applying a penalty to the regression coefficients. It mathematically shrinks the coefficients of less important variables to exactly zero, effectively removing them from the model and leaving only the most impactful predictors.
 
+Crucially, before running the selection process, we removed the 2016 and 2020 election results from the dataset. While past voting behavior is the strongest predictor of future voting, including it would have overshadowed the demographic trends we aimed to study. The goal of our project is to understand what variables are most important in the way a state will vote; if we were to have used 2016 and 2020 election results, we could have very possibly arrived at a model with 100% accuracy. However, it would not have given us any insight unto what demographic variables are most important
+
+The LASSO algorithm identified three distinct variables as the strongest drivers of the 2024 vote:
+
+1.  *Percentage of Households that Own Guns* (Cultural)
+- This variable seems to represent a more cultural aspect of the population. We hypothesized that a higher percentage of households that own guns will result in a higher likely likelihood that the state will vote Republican.
+
+2.  *Median Household Income* (Economic)
+- This variable represent  the economic aspect of the state's population. We hypothesized that a higher median household income will result in higher likelihood of the state voting Democrat. (States with higher Median Household Income such as California, New York and Illinois seem to favor democrats.)
+
+3.  *African American COVID Death Rate* (Regional/Health)
+- This variable provides a much harder to understand relationship. While it seems to represent a regional or health aspect of the state, it being chosen and how it will affect the models decision is a harder to theorize. While it is true that demographic data on the race makeup of a state can theoretically provide significance to the model, there also exists a variable in our dataset "black" that specifically targets the percentage of the state that is made up by an African American / Black population. What this variable seems to target. on the other hand is, more specifically, the number of African American individuals that unfortunately died from the COVID virus. We can hypothesize that this relates not only to the proportion of black population in a state (which appears to be higher on the southern republican states), but also to the degree of COVID prevention and medical care provided to these individuals.
+
+*Model Refinement (Bayesian Logistic Regression)*
+
+We used these three selected variables to fit our final *Bayesian Logistic Regression* model. We chose the Bayesian approach (`bayesglm`) over standard logistic regression due to the small size of our dataset ($n=50$). Standard logistic regression often becomes unstable with small samples, especially when predictors are very strong, leading to infinite coefficients and unreliable standard errors. Bayesian logistic regression solves this by applying a prior distribution that acts as a stabilizer, gently pulling coefficients towards realistic values and ensuring the math remains robust.
+
+**Results and Interpretation**
+
+The Model achieved a **92.3% accuracy** on the test data, correctly classifying the voting outcome for **12 out of the 13 states** in the testing set.
+
+*Table 1: Final Model Results (Bayesian Logistic Regression)*
+
+| Predictor Variable | Coefficient | P-Value | Significance |
+| :--- | :---: | :---: | :---: |
+| (Intercept) | $3.845$ | $0.575$ | |
+| Gun Ownership (%) | $-0.119$ | $\mathbf{0.027}$ | * |
+| Median Household Income | $5.12e^{-5}$ | $0.356$ | |
+| AA COVID Death Rate | $-0.012$ | $0.160$ | |
+| | | | |
+| *Test Set Accuracy* | *92.3%* | **(12/13 Correct)* | |
+
+As seen in Table 1, Gun Ownership was the primary driver of the model and the only statistically significant variable at the $\alpha = 0.05$ level ($p = 0.027$). The coefficient for gun ownership is negative ($-0.119$), indicating a strong inverse relationship with voting Democrat. Specifically, the odds ratio suggests that for every 1% increase in a state's gun ownership, the odds of that state voting Democrat decrease by approximately 11.2%. This magnitude identifies cultural identity as a massive divider in the current political landscape.
+
+While Median Household Income ($p = 0.356$) and AA COVID Death Rate ($p = 0.160$) yielded p-values above the traditional 0.05 threshold, their inclusion was essential for the model's predictive power. In small datasets, variables that overlap (multicollinearity) often split the statistical "credit," causing their individual p-values to rise. However, without these variables, the model lacks the nuance to identify "swing" states. Income helps distinguish wealthy suburban areas (which may lean Democrat despite moderate gun ownership), while COVID rates likely help identify specific regional voting patterns in the South.
+
+**Comparison with Alternative Models**
+
+To confirm the necessity of our three-variable approach, we tested simpler models using traditional Forward Selection methods, which prioritized single variables like Income or Commuting methods.
+
+**Comparison with Alternative Models**
+
+To confirm the necessity of our three-variable approach, we tested simpler models using traditional Forward Selection methods based on p-values ($p < 0.05$). Interestingly, this greedy algorithm did not select Income or Gun Ownership; instead, it identified **Commuting Patterns** (specifically driving alone or carpooling) as the statistically "purest" separators of the training data.
+
+**Table 2: Forward Selection Model Results (Commuting Patterns)**
+
+| Predictor Variable | Coefficient | P-Value | Accuracy |
+| :--- | :---: | :---: | :---: |
+| (Intercept) | $53.12$ | $0.004$ | |
+| Drove Alone (Rate) | $-52.88$ | $0.010$ | |
+| Carpool (Rate) | $-179.73$ | $0.013$ | |
+| | | | |
+| **Test Set Accuracy** | **76.9%** | **(10/13 Correct)** | |
+
+As shown in Table 2, this model relies on proxies for urban density (where driving alone is less common) rather than direct cultural or economic indicators. While the p-values appear significant ($p < 0.05$), the model shows signs of instability, with massive coefficients ($-179.7$) and warnings of perfect separation in the training phase. Furthermore, this model achieved an accuracy of only **76.9%** on the test data. The drop in accuracy from the Champion Model (92.3%) to this benchmark demonstrates that while urban/rural proxies like commuting can identify the "obvious" states, they lack the nuance of the Culture (Guns) + Economy (Income) approach needed to correctly predict the more difficult swing states.
+
+
+**Conclusion:**
+
+TBD
 
 **Contributions:**
 

@@ -53,16 +53,14 @@ cleaned_data <- na_to_zero(cleaned_data, "PercentageOfHouseholdsThatOwnGuns")
 ```
 
 
-Next, we will turn certain columns from character values to factor values.
+Next, we will turn certain columns from character values to Boolean values.
 ```{r}
-cleaned_data <- to_factor(cleaned_data, "Voting.Results.2016")
-cleaned_data <- to_factor(cleaned_data, "Voting.Results.2020")
-cleaned_data <- to_factor(cleaned_data, "Voting.Results.2024")
-
-glimpse(select(cleaned_data, 
-               "Voting.Results.2016", 
-               "Voting.Results.2020", 
-               "Voting.Results.2024"))
+cleaned_data <- cleaned_data %>%
+  mutate(
+    Voting.Results.2016 = if_else(Voting.Results.2016 == "D", 1, 0),
+    Voting.Results.2020 = if_else(Voting.Results.2020 == "D", 1, 0),
+    Voting.Results.2024 = if_else(Voting.Results.2024 == "D", 1, 0)
+  )
 ```
 
 ```{r}

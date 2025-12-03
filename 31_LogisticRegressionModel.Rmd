@@ -57,129 +57,97 @@ print(confusion_matrix)
 accuracy <- sum(diag(confusion_matrix)) / sum(confusion_matrix)
 
 print(paste("Model Accuracy on Test Data:", round(accuracy * 100, 2), "%"))
+
+plot(model_logistic)
 ```
 
+Backwards eliminiation:
 
-
-
-Backwards Selection Model.
 
 ```{r}
-df = data.frame(cleaned_data)
 
+library(janitor)
+library(rsample)
+library(dplyr)
 
-# Clean column names
-df_clean <- df %>%
+# 1. Clean names (Good practice)
+cleaned_data_clean <- cleaned_data %>%
   clean_names()
 
-df_clean <- df_clean %>%
-  mutate(voting_results_2024 = as.factor(voting_results_2024))
+# 2. Ensure the target is Numeric (0 and 1)
+# We skip 'relevel' because 0 and 1 imply their own order (0 is baseline)
+cleaned_data_clean <- cleaned_data_clean %>%
+  mutate(voting_results_2024 = as.numeric(voting_results_2024))
 
-# Set the reference level to "D". This means the model will be
-# predicting the probability of "R" (the other level).
-# For glmnet, we will use 0 for "D" and 1 for "R" later.
-df_clean$voting_results_2024 <- relevel(df_clean$voting_results_2024, ref = "D")
+set.seed(123) 
 
-set.seed(123)
-
-# 75/25 split
-data_split <- initial_split(df_clean, prop = 0.75, strata = voting_results_2024)
-
+# 3. Split the data
+data_split <- initial_split(cleaned_data_clean, prop = 0.75, strata = voting_results_2024)
 train_data <- training(data_split)
 test_data  <- testing(data_split)
 
-print(paste(
-  "Data split:",
-  "Training set size:", nrow(train_data),
-  "Test set size:", nrow(test_data)
-))
+# Step 1: Install the package that handles "perfect separation"
+if(!require(arm)) install.packages("arm")
+library(arm)
 
+# Step 2: Use bayesglm instead of glm
+# We also removed "White" because White + Black + Hispanic creates multicollinearity 
+# (They sum to 100%, which confuses the math)
+library(arm)
 
+library(arm)
 
-# full list of predictors
-all_predictors_formula <- as.formula(
-  ~ black + hispanic + asian + american_indian_or_alaska_native +
-    native_hawaiian_or_pacific_islander + multiple_races +
-    bicycle + walked + taxi_motorcycle_or_other + public_transportation +
-    worked_at_home + carpool + percentage_of_households_that_own_guns +
-    gun_ownership_num_of_gun_licenses_num_2022 + covid_deaths +
-    covid_pct_of_total + crude_covid_rate + aa_covid_rate +
-    crude_covid_rate_ann + aa_covid_rate_ann +
-    unemployment_rate_august_2025 + median_household_income +
-    electoral_college_votes
+# Hypothesis: Guns (Republican) vs. Cities/Transit (Democrat)
+urban_model <- bayesglm(
+  voting_results_2024 ~ percentage_of_households_that_own_guns + 
+  median_household_income + 
+  public_transportation,   # <--- The "City" proxy
+  data = train_data, 
+  family = "binomial"
 )
 
+summary(urban_model)
 
+# Predictions
+probabilities <- predict(urban_model, newdata = test_data, type = "response")
+predictions <- ifelse(probabilities > 0.5, "D", "R")
 
-predictor_vars <- all.vars(all_predictors_formula)
-outcome_var <- "voting_results_2024"
-all_vars_to_check <- c(outcome_var, predictor_vars)
+# Confusion Matrix
+actuals_labels <- ifelse(test_data$voting_results_2024 == 1, "D", "R")
+confusion_matrix <- table(Predicted = predictions, Actual = actuals_labels)
+print(confusion_matrix)
 
-# Filter train_data for complete cases
-train_data_complete <- train_data[
-  complete.cases(train_data[, all_vars_to_check]),
-]
-
-# Create the 'x' matrix for training from the complete data
-train_x <- model.matrix(all_predictors_formula, data = train_data_complete)[, -1] # fix for glmnet
-
-# Create the 'y' vector for training from the complete data
-train_y <- train_data_complete$voting_results_2024
-
-
-# Using cross-validation
-set.seed(123)
-
-cv_lasso <- cv.glmnet(train_x,
-  train_y,
-  family = "binomial",
-  alpha = 1
-)
-
-
-
-print(paste("Optimal lambda (lambda.min):", cv_lasso$lambda.min))
-
-# Get the coefficients
-lasso_coeffs <- coef(cv_lasso, s = "lambda.min")
-print(lasso_coeffs)
-
-
-print(' ')
-print("<---------------------------------- Evaluating final model ---------------------------------->")
-print(' ')
-
-test_data_complete <- test_data[
-  complete.cases(test_data[, all_vars_to_check]),
-]
-
-
-# Create 'x' matrix for test data from the complete data
-test_x <- model.matrix(all_predictors_formula, data = test_data_complete)[, -1]
-
-test_y_actuals <- test_data_complete$voting_results_2024
-
-
-predictions <- predict(cv_lasso,
-  newx = test_x,
-  s = "lambda.min",
-  type = "class"
-)
-
-if (length(predictions) > 0) {
-  confusion_matrix <- table(
-    Predicted = predictions,
-    Actual = test_y_actuals
-  )
-
-  print("Confusion Matrix (Test Data):")
-  print(confusion_matrix)
-
-  # Calculate accuracy
-  accuracy <- sum(diag(confusion_matrix)) / sum(confusion_matrix)
-  print(paste("Model Accuracy on Test Data:", round(accuracy * 100, 2), "%"))
-} else {
-  print("No complete cases found in the test set to make predictions.")
-}
+# Accuracy
+accuracy <- sum(diag(confusion_matrix)) / sum(confusion_matrix)
+print(paste("Model Accuracy:", round(accuracy * 100, 2), "%"))
 
 ```
+
+
+```{r}
+
+library(blorr)
+
+# 1. Define the full model using standard glm (not bayesglm)
+full_glm_model <- glm(
+  voting_results_2024 ~ percentage_of_households_that_own_guns + 
+  median_household_income + 
+  worked_at_home + 
+  black + hispanic + unemployment_rate_august_2025,
+  data = train_data, 
+  family = "binomial"
+)
+
+# 2. Run the Backward Selection based on P-values
+# prem = 0.05 means "Remove variable if p-value is > 0.05"
+selection <- blr_step_p_backward(full_glm_model, prem = 0.05)
+
+# 3. View the results
+selection
+```
+
+
+
+
+
+
