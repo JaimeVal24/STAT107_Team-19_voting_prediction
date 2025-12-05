@@ -263,7 +263,7 @@ In this section, we tested our model using the same variable predictors on diffe
 
 **Conclusion:**
 
-TBD
+Overall, the final Bayesian logistic regression model demonstrated that state‑level demographic and contextual variables can predict 2024 presidential voting outcomes with roughly 92% accuracy, correctly classifying 12 of 13 states. The LASSO technique identified gun ownership, median household income, and Age-Adjusted COVID‑19 death rate as the most influential predictors, with gun ownership being the only statistically significant variable. Income and COVID mortality, while weaker individually, improved model stability and helped differentiate competitive “swing” states, highlighting the roles of culture, economics, and regional health in shaping voting results. While these findings suggest that past voting remains the strongest predictor in practice, they also show that carefully chosen demographic indicators can meaningfully anticipate state‑level outcomes. Because this model includes only a single election cycle, these findings should be viewed as exploratory, and future work could incorporate data from multiple election years to test whether the model’s predictive patterns remain consistent over time.
 
 **Contributions:**
 
