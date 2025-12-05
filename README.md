@@ -10,7 +10,8 @@
 
 2. **Run the Scripts in Order**
    - Run `21_DataProcessing.Rmd`, combines raw data and saves `merged_data.RData`.  
-   - Run `22_DataCleaning.Rmd`, cleans the data and saves `cleaned_data.RData`.  
+   - Run `22_DataCleaning.Rmd`, cleans the data and saves `cleaned_data.RData`.
+   - Run `31_31_LogisticRegressionModel`, this trains and tests our model.
    - Run `FinalReport.Rmd`,  creates the final report (`FinalReport.pdf`).
 
 
@@ -30,11 +31,11 @@ This file includes all libraries necessary for the project.
 
 *01_funct_DataCleaning.R*
 
-Here we include all functions necessary for the data cleaning.
+Here, we include all functions necessary for the data cleaning.
 
 *02_func_Plots.r*
 
-Here we can find all functions necessary for data plotting.
+Here we can find all the functions necessary for data plotting.
 
 *21_DataProcessing.Rmd*
 
@@ -43,6 +44,10 @@ Here we can find our data processing file. In this, we read all the data sets fr
 *22_DataCleaning.Rmd*
 
 In this file, we take the merged dataset from 21_DataProcessing.Rmd and clean it even further. Then we upload the clean data set into processed_data.
+
+*31_LogisticRegressionModel*
+
+This file contains the heart of our project: the model.
 
 *FinalReport.Rmd*
 Here, we include an overall description of the project, including vizualizations, future models and data reading and cleaning process. A knitted version of this file is available as *FinalReport.pdf*
