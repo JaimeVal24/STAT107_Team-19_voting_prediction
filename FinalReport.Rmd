@@ -76,13 +76,14 @@ The following are the variables for each of our observations:
 [36] "Voting.Results.2020"                                     "Voting.Results.2024"                                    
 [38] "Electoral.College.Votes"                                
 
-Data cleaning consisted of removing columns that were not necessary and could not be used for our future model. This included dates, fully empty columns, etc. We then replaced NA values in numerical columns with 0, as it will allow for the data set to be more manageable when it comes to implementing our model. Lastly, we turned the character columns  of voting results from 2016, 2020 and 2024 into factor values.
+Data cleaning consisted of removing columns that were not necessary and could not be used for our future model. This included dates, fully empty columns, etc. We then replaced NA values in numerical columns with 0, as it will allow for the data set to be more manageable when it comes to implementing our model. Lastly, we turned the character columns of voting results from 2016, 2020 and 2024 into factor values.
 
 **Visualization**:
 
 We want to explore the relationships between some of our variables, and see if they ar correlated. If there are correlations between different variables in our data then we can start to gain a clearer idea of how they might influence voting.
 
 ```{r, echo = FALSE}
+options(scipen = 6)
 source(here("02_func_Plots.r"))
 scatterplot(joined_data$Median.Household.Income, joined_data$'Public transportation', "Median Household Income", "Public Transportation")
 ```
@@ -94,46 +95,64 @@ scatterplot(joined_data$Median.Household.Income, joined_data$PercentageOfHouseho
 When comparing the median household income of a state to the percentage of homes that own guns, we see a very clear trend that indicates that states with a higher median income own less guns, and vice versa.
 
 ```{r, echo=FALSE}
-# race_data <- c("White", "Black", "Hispanic", "Asian", "American Indian or Alaska Native", "Native Hawaiian or Pacific Islander", "Multiple Races")
-# elections <- c("Voting.Results.2016", "Voting.Results.2020", "Voting.Results.2024")
-# par(mfrow = c(3, 2), mar = c(0, 0, 1, 0))
-
-# for(year in elections){
-#   dem_states <- joined_data[joined_data[[year]] == "D", ]
-#   rep_states <- joined_data[joined_data[[year]] == "R", ]
-# 
-#   avg_race_dem <- colMeans(dem_states[, race_data], na.rm = TRUE)
-#   avg_race_rep <- colMeans(rep_states[, race_data], na.rm = TRUE)
+for(year in elections){
+  par(mfrow = c(1, 2), mar = c(11, 4, 1, 0))
   
-#   pie(avg_race_dem, labels = race_data, main = paste("Democratic", year), cex = 0.6)
-#    pie(avg_race_rep, labels = race_data, main = paste("Republican", year), cex = 0.6)
-#}
+  dem_states <- joined_data[joined_data[[year]] == "1", ]
+  rep_states <- joined_data[joined_data[[year]] == "0", ]
+ 
+  avg_race_dem <- colMeans(dem_states[, race_data], na.rm = TRUE)
+  avg_race_rep <- colMeans(rep_states[, race_data], na.rm = TRUE)
+  
+  year_number <- sub("Voting.Results\\.", "", year)
+  
+  barplot(avg_race_dem, names.arg = race_data, las = 2, cex.names = 0.7, cex.main = 0.85, main = paste("Democratic Voting Results by Race in", year_number), ylab = "Average %", col = terrain.colors(length(race_data)), ylim = c(0, 0.8))
+  barplot(avg_race_rep, names.arg = race_data, las = 2, cex.names = 0.7, cex.main = 0.85, main = paste("Republican Voting Results by Race in", year_number), ylab = "Average %", col = terrain.colors(length(race_data)), ylim = c(0, 0.8))
+}
 ```
 Next, we can look at the ethnic breakdown of each election, split by states that went red in each election and states that went blue. We can see that for every election the Democrats had less of a proportion of their votes from white voters, and more of a proportion of their votes from minority races. Additionally, although the ethnic breakdowns of each election differ greatly for democratic states vs republican states, the breakdowns barely differ when comparing different years.
 
 ```{r, echo=FALSE}
-# comparison_data <- c(
-# "PercentageOfHouseholdsThatOwnGuns", 
-# "aa_COVID_rate", 
-# "Unemployment.Rate.August.2025", 
-# "Median.Household.Income"
-# )
-# par(mfrow = c (2, 2), mar = c(2, 2, 3, 2))
-# for(var in comparison_data){
-#   dem_states <- joined_data[joined_data[["Voting.Results.2024"]] == "D", ]
-#   rep_states <- joined_data[joined_data[["Voting.Results.2024"]] == "R", ]
-# 
-#   avg_dem <- mean(dem_states[[var]], na.rm = TRUE)
-#   avg_rep <- mean(rep_states[[var]], na.rm = TRUE)
-# 
-#   bar_vector <- c(avg_rep, avg_dem)
-#   
-#  barplot(bar_vector, names.arg = c("Republican", "Democrat"), main = paste("Average", var, "by 2016 Voting"), ylab = var, cex.main = 0.8)
-#}
-# par(mfrow = c (1, 1))
+comparison_data <- c("PercentageOfHouseholdsThatOwnGuns", "aa_COVID_rate", "Median.Household.Income")
+i <- 1
+comparison_names  <- c("Rate of Households that Own Guns (%)", "Age-Adjusted COVID Rate per 100000", "Median Household Income (USD)")
+par(mfrow = c (2, 2), mar = c(2, 2, 3, 2))
+ for(var in comparison_data){
+   dem_states <- joined_data[joined_data[["Voting.Results.2024"]] == "1", ]
+   rep_states <- joined_data[joined_data[["Voting.Results.2024"]] == "0", ]
+ 
+   avg_dem <- mean(dem_states[[var]], na.rm = TRUE)
+   avg_rep <- mean(rep_states[[var]], na.rm = TRUE)
+ 
+   bar_vector <- c(avg_rep, avg_dem)
+   
+  barplot(bar_vector, names.arg = c("Republican", "Democrat"), main = paste(comparison_names[i], "by 2024 Voting"), ylab = var, cex.main = 0.8, col = c("darkred", "darkblue"))
+  i = i + 1
+}
+ par(mfrow = c (1, 1))
 ```
 
-We can compare the average gun ownership percentage, pandemic COVID-19 rate, unemployment rate, and median household income for states that went blue and red in the 2024 election. We can see that states that voted Republican in 2024 have a much higher average gun ownership rate and average COVID-19 rate during the pandemic, and democratic states have a slightly higher average unemployment rate and average median household income.
+We can compare the average gun ownership percentage, pandemic COVID-19 rate, and median household income for states that went blue and red in the 2024 election. We can see that states that voted Republican in 2024 have a much higher average gun ownership rate and average COVID-19 rate during the pandemic, and democratic states have a slightly higher average unemployment rate and average median household income.
+
+```{r, echo=FALSE}
+pairs_data <- joined_data[, comparison_data]
+pairs_cols <- ifelse(joined_data$Voting.Results.2024 == "1", "darkblue", "darkred")
+pairs(pairs_data, labels = comparison_names, cex = 1.4, cex.labels = 0.7, col = pairs_cols, main = "Pairs Plot of Assessed Variables Colored by 2024 Election Result")
+```
+
+```{r, echo=FALSE}
+corr_matrix <- cor(pairs_data, use = "pairwise.complete.obs")
+colnames(corr_matrix) <- comparison_names
+rownames(corr_matrix) <- comparison_names
+
+if (!require(corrplot)) {
+  install.packages("corrplot")
+  library(corrplot)
+}
+
+corrplot(corr_matrix, method = "color", addCoef.col = "black", tl.col = "black", tl.srt = 45, tl.cex = 0.71)
+```
+We can see from this pairs plot and related correlation heat map how each assessed variable relates to one-another. Each states Rate of Households that Own Guns (%), Age-Adjusted COVID Rate per 100000 people, and Median Household Income are compared to each other on scatter plots, and then assessed for an $r$ correlation value, displayed on the heat map. The higher the correlation, the higher the absolute value of the $r$ value, with positive values representing positive linear correlations and negative values representing negative linear correlations. We can see that every variable has a maximum correlation of 1.0 when being compared to itself, which is obvious, but the two highest correlations I want to talk about are the correlation between Median household income and gun ownership and the correlation between median household income and COVID rate. Both of these values of -0.70 and -0.65 respectively show a strong, negative correlation between the two variables.
 
 ```{r, echo=FALSE}
 # selected_vars <- c(
@@ -250,7 +269,7 @@ TBD
 
 Jaime Valencia Lopez: Wrote 21_DataProcessing.Rmd (merged the first four datasets and added the descriptions), 22_DataCleaning.Rmd (all code and descriptions), 01_funct_DataCleaning.R, FinalReport (excluding vizualizations) and README.md.
 
-Evan Silzle: Wrote 02_func_PLots.r, Helped contribute to data cleaning process by merging a set of simple data sets manually, loading and cleaning them, then merging them with the main data set, as well as some cleaning of the merged data frame. Created and analyzed comparative data visualizations using loops and functions: two scatterplots, six related pie charts, and four related bar graphs.
+Evan Silzle: Wrote 02_func_Plots.r, Helped contribute to data cleaning process by merging a set of simple data sets manually, loading and cleaning them, then merging them with the main data set, as well as some cleaning of the merged data frame. Created and analyzed comparative data visualizations using loops and functions: two scatterplots, six related pie charts, and four related bar graphs.
 
 Sumukh Chanda: Helped contribute to the idea and worked on the data visualization models. 
 
