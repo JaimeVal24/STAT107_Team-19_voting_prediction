@@ -95,6 +95,7 @@ scatterplot(joined_data$Median.Household.Income, joined_data$PercentageOfHouseho
 When comparing the median household income of a state to the percentage of homes that own guns, we see a very clear trend that indicates that states with a higher median income own less guns, and vice versa.
 
 ```{r, echo=FALSE}
+elections = c("Voting.Results.2016", "Voting.Results.2020", "Voting.Results.2024")
 for(year in elections){
   par(mfrow = c(1, 2), mar = c(11, 4, 1, 0))
   
