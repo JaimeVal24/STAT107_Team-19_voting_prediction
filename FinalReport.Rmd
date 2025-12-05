@@ -119,7 +119,7 @@ Next, we can look at the ethnic breakdown of each election, split by states that
 ```{r, echo=FALSE}
 comparison_data <- c("PercentageOfHouseholdsThatOwnGuns", "aa_COVID_rate", "Unemployment.Rate.August.2025", "Median.Household.Income")
 i <- 1
-names  <- c("Rate of Households that Own Guns (%)", "Age-Adjusted COVID Rate per 100000", "Unemployement Rate (%)", "Median Household Income (USD)")
+comparison_names  <- c("Rate of Households that Own Guns (%)", "Age-Adjusted COVID Rate per 100000", "Unemployement Rate (%)", "Median Household Income (USD)")
 par(mfrow = c (2, 2), mar = c(2, 2, 3, 2))
  for(var in comparison_data){
    dem_states <- joined_data[joined_data[["Voting.Results.2024"]] == "1", ]
@@ -130,7 +130,7 @@ par(mfrow = c (2, 2), mar = c(2, 2, 3, 2))
  
    bar_vector <- c(avg_rep, avg_dem)
    
-  barplot(bar_vector, names.arg = c("Republican", "Democrat"), main = paste(names[i], "by 2024 Voting"), ylab = var, cex.main = 0.8, col = c("darkred", "darkblue"))
+  barplot(bar_vector, names.arg = c("Republican", "Democrat"), main = paste(comparison_names[i], "by 2024 Voting"), ylab = var, cex.main = 0.8, col = c("darkred", "darkblue"))
   i = i + 1
 }
  par(mfrow = c (1, 1))
@@ -156,7 +156,28 @@ We can compare the average gun ownership percentage, pandemic COVID-19 rate, une
 #   mtext(explanation, side = 1, line = 1, cex = 0.7)
 # }
 ```
+
 Lastly, we can create box plots to understand  the distribution of the data sets through their median, spread, and overall range. They highlight the central tendency, variability, and possible outliers and will give us more insight into our specific data and the validity of it as we are able to identify any skewed distributions. These specific ones are just a few of all of the box plots we can create for each variable introduced. 
+
+```{r, echo=FALSE}
+pairs_data <- joined_data[, comparison_data]
+pairs_cols <- ifelse(joined_data$Voting.Results.2024 == "1", "darkblue", "darkred")
+pairs(pairs_data, labels = comparison_names, cex = 1.4, cex.labels = 0.7, col = pairs_cols, main = "Pairs Plot of Assessed Variables Colored by 2024 Election Result")
+```
+
+```{r, echo=FALSE}
+corr_matrix <- cor(pairs_data, use = "pairwise.complete.obs")
+colnames(corr_matrix) <- comparison_names
+rownames(corr_matrix) <- comparison_names
+
+if (!require(corrplot)) {
+  install.packages("corrplot")
+  library(corrplot)
+}
+
+corrplot(corr_matrix, method = "color", addCoef.col = "black", tl.col = "black", tl.srt = 45, tl.cex = 0.71)
+```
+We can see from this pairs plot and related correlation heat map how each assessed variable relates to one-another. Each states Rate of Households that Own Guns (%), Age-Adjusted COVID Rate per 100000 people, Unemployment Rate, and Median Household Income are compared to each other on scatter plots, and then assessed for an $r$ correlation value, displayed on the heat map. The higher the correlation, the higher the absolute value of the $r$ value, with positive values representing positive linear correlations and negative values representing negative linear correlations. We can see that every variable has a maximum correlation of 1.0 when being compared to itself, which is obvious, but the two highest correlations I want to talk about are the correlation between Median household income and gun ownership and the correlation between median household income and COVID rate. Both of these values of -0.70 and -0.65 respectively show a strong, negative correlation between the two variables.
 
 **Analysis**:
 
