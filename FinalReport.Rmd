@@ -96,6 +96,7 @@ When comparing the median household income of a state to the percentage of homes
 
 ```{r, echo=FALSE}
 elections = c("Voting.Results.2016", "Voting.Results.2020", "Voting.Results.2024")
+race_data <- c("White", "Black", "Hispanic", "Asian", "American Indian or Alaska Native", "Native Hawaiian or Pacific Islander", "Multiple Races")
 for(year in elections){
   par(mfrow = c(1, 2), mar = c(11, 4, 1, 0))
   
@@ -151,7 +152,7 @@ if (!require(corrplot)) {
   library(corrplot)
 }
 
-corrplot(corr_matrix, method = "color", addCoef.col = "black", tl.col = "black", tl.srt = 45, tl.cex = 0.71)
+corrplot::corrplot(corr_matrix, method = "color", addCoef.col = "black", tl.col = "black", tl.srt = 45, tl.cex = 0.71)
 ```
 We can see from this pairs plot and related correlation heat map how each assessed variable relates to one-another. Each states Rate of Households that Own Guns (%), Age-Adjusted COVID Rate per 100000 people, and Median Household Income are compared to each other on scatter plots, and then assessed for an $r$ correlation value, displayed on the heat map. The higher the correlation, the higher the absolute value of the $r$ value, with positive values representing positive linear correlations and negative values representing negative linear correlations. We can see that every variable has a maximum correlation of 1.0 when being compared to itself, which is obvious, but the two highest correlations I want to talk about are the correlation between Median household income and gun ownership and the correlation between median household income and COVID rate. Both of these values of -0.70 and -0.65 respectively show a strong, negative correlation between the two variables.
 
