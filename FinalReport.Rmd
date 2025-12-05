@@ -28,7 +28,7 @@ joined_data <- cleaned_data
 
 *Abstract:* 
 
-In this project, we aim to create a predictive model based on State data that aims to accurately predict the party that a state will vote for in the presidential electionbased on demographic data and past voting history. Our question is "Are we able to somewhat accurately predict a states voting tendency based on demographic data using logistic regression? If so, which variables are most important to the model?". **Conclusion to be done**
+In this project, we develop a statistical model to predict which party a state will support in future elections based on 2024 presidential election data and general demographic data. Using publicly available data for all 50 states, we compiled measures of gun ownership, median household income, unemployment, COVID‑19 mortality, transportation patterns, racial composition, anre more.We then linked these variables to each state’s 2024 presidential outcome. After initial exploration with correlation plots and pairs plots, we fit a series of logistic regression models and used LASSO regularization for variable selection to isolate the most informative predictors. We then estimated a Bayesian logistic regression model using the selected variables and evaluated its performance on specific states. The final model achieved roughly 92% accuracy, identifying gun ownership, median household income, and Age-Adjusted COVID‑19 death rate as the key predictors. These results suggest that, although past voting behavior remains the strongest single predictor in practice, a combination of demographic indicators can also identify state level support, while highlighting how cultural, economic, and health‑related factors jointly shape the modern U.S. voting map.
 
 **Introduction:**
 
