@@ -45,7 +45,7 @@ Here we can find our data processing file. In this, we read all the data sets fr
 
 In this file, we take the merged dataset from 21_DataProcessing.Rmd and clean it even further. Then we upload the clean data set into processed_data.
 
-*31_LogisticRegressionModel**
+*31_LogisticRegressionModel*
 
 This file contains the heart of our project: the model.
 
