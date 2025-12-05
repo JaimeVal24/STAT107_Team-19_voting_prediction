@@ -76,64 +76,61 @@ The following are the variables for each of our observations:
 [36] "Voting.Results.2020"                                     "Voting.Results.2024"                                    
 [38] "Electoral.College.Votes"                                
 
-Data cleaning consisted of removing columns that were not necessary and could not be used for our future model. This included dates, fully empty columns, etc. We then replaced NA values in numerical columns with 0, as it will allow for the data set to be more manageable when it comes to implementing our model. Lastly, we turned the character columns of voting results from 2016, 2020 and 2024 into factor values.
+Data cleaning consisted of removing columns that were not necessary and could not be used for our future model. This included dates, fully empty columns, etc. We then replaced NA values in numerical columns with 0, as it will allow for the data set to be more manageable when it comes to implementing our model. Lastly, we turned the character columns  of voting results from 2016, 2020 and 2024 into factor values.
 
 **Visualization**:
 
 We want to explore the relationships between some of our variables, and see if they ar correlated. If there are correlations between different variables in our data then we can start to gain a clearer idea of how they might influence voting.
 
 ```{r, echo = FALSE}
-options(scipen = 7)
 source(here("02_func_Plots.r"))
 scatterplot(joined_data$Median.Household.Income, joined_data$'Public transportation', "Median Household Income", "Public Transportation")
 ```
 From the plot above we can see the relationship between the median household income and the rate of using public transportation to get to work. From the line of best fit we can tell that there is a relationship between the two variables. The states with higher median household income see higher rates of their workforce using public transportation to work. One thing that sticks out are the two high outliers at the top. New York has a median household income of 84,578 and a public transportation rate of 0.2352, and D.C. has a median household income of 106,287 and a public transportation rate of 0.2290.
 
 ```{r, echo=FALSE}
-options(scipen = 7)
 scatterplot(joined_data$Median.Household.Income, joined_data$PercentageOfHouseholdsThatOwnGuns, "Median Household Income", "Percentage of Home That Own Guns")
 ```
 When comparing the median household income of a state to the percentage of homes that own guns, we see a very clear trend that indicates that states with a higher median income own less guns, and vice versa.
 
 ```{r, echo=FALSE}
-race_data <- c("White", "Black", "Hispanic", "Asian", "American Indian or Alaska Native", "Native Hawaiian or Pacific Islander", "Multiple Races")
-elections <- c("Voting.Results.2016", "Voting.Results.2020", "Voting.Results.2024")
+# race_data <- c("White", "Black", "Hispanic", "Asian", "American Indian or Alaska Native", "Native Hawaiian or Pacific Islander", "Multiple Races")
+# elections <- c("Voting.Results.2016", "Voting.Results.2020", "Voting.Results.2024")
+# par(mfrow = c(3, 2), mar = c(0, 0, 1, 0))
 
-for(year in elections){
-  par(mfrow = c(1, 2), mar = c(11, 4, 1, 0))
+# for(year in elections){
+#   dem_states <- joined_data[joined_data[[year]] == "D", ]
+#   rep_states <- joined_data[joined_data[[year]] == "R", ]
+# 
+#   avg_race_dem <- colMeans(dem_states[, race_data], na.rm = TRUE)
+#   avg_race_rep <- colMeans(rep_states[, race_data], na.rm = TRUE)
   
-  dem_states <- joined_data[joined_data[[year]] == "1", ]
-  rep_states <- joined_data[joined_data[[year]] == "0", ]
- 
-  avg_race_dem <- colMeans(dem_states[, race_data], na.rm = TRUE)
-  avg_race_rep <- colMeans(rep_states[, race_data], na.rm = TRUE)
-  
-  year_number <- sub("Voting.Results\\.", "", year)
-  
-  barplot(avg_race_dem, names.arg = race_data, las = 2, cex.names = 0.7, cex.main = 0.85, main = paste("Democratic Voting Results by Race in", year_number), ylab = "Average %", col = terrain.colors(length(race_data)), ylim = c(0, 0.8))
-  barplot(avg_race_rep, names.arg = race_data, las = 2, cex.names = 0.7, cex.main = 0.85, main = paste("Republican Voting Results by Race in", year_number), ylab = "Average %", col = terrain.colors(length(race_data)), ylim = c(0, 0.8))
-}
+#   pie(avg_race_dem, labels = race_data, main = paste("Democratic", year), cex = 0.6)
+#    pie(avg_race_rep, labels = race_data, main = paste("Republican", year), cex = 0.6)
+#}
 ```
 Next, we can look at the ethnic breakdown of each election, split by states that went red in each election and states that went blue. We can see that for every election the Democrats had less of a proportion of their votes from white voters, and more of a proportion of their votes from minority races. Additionally, although the ethnic breakdowns of each election differ greatly for democratic states vs republican states, the breakdowns barely differ when comparing different years.
 
 ```{r, echo=FALSE}
-comparison_data <- c("PercentageOfHouseholdsThatOwnGuns", "aa_COVID_rate", "Unemployment.Rate.August.2025", "Median.Household.Income")
-i <- 1
-comparison_names  <- c("Rate of Households that Own Guns (%)", "Age-Adjusted COVID Rate per 100000", "Unemployement Rate (%)", "Median Household Income (USD)")
-par(mfrow = c (2, 2), mar = c(2, 2, 3, 2))
- for(var in comparison_data){
-   dem_states <- joined_data[joined_data[["Voting.Results.2024"]] == "1", ]
-   rep_states <- joined_data[joined_data[["Voting.Results.2024"]] == "0", ]
- 
-   avg_dem <- mean(dem_states[[var]], na.rm = TRUE)
-   avg_rep <- mean(rep_states[[var]], na.rm = TRUE)
- 
-   bar_vector <- c(avg_rep, avg_dem)
-   
-  barplot(bar_vector, names.arg = c("Republican", "Democrat"), main = paste(comparison_names[i], "by 2024 Voting"), ylab = var, cex.main = 0.8, col = c("darkred", "darkblue"))
-  i = i + 1
-}
- par(mfrow = c (1, 1))
+# comparison_data <- c(
+# "PercentageOfHouseholdsThatOwnGuns", 
+# "aa_COVID_rate", 
+# "Unemployment.Rate.August.2025", 
+# "Median.Household.Income"
+# )
+# par(mfrow = c (2, 2), mar = c(2, 2, 3, 2))
+# for(var in comparison_data){
+#   dem_states <- joined_data[joined_data[["Voting.Results.2024"]] == "D", ]
+#   rep_states <- joined_data[joined_data[["Voting.Results.2024"]] == "R", ]
+# 
+#   avg_dem <- mean(dem_states[[var]], na.rm = TRUE)
+#   avg_rep <- mean(rep_states[[var]], na.rm = TRUE)
+# 
+#   bar_vector <- c(avg_rep, avg_dem)
+#   
+#  barplot(bar_vector, names.arg = c("Republican", "Democrat"), main = paste("Average", var, "by 2016 Voting"), ylab = var, cex.main = 0.8)
+#}
+# par(mfrow = c (1, 1))
 ```
 
 We can compare the average gun ownership percentage, pandemic COVID-19 rate, unemployment rate, and median household income for states that went blue and red in the 2024 election. We can see that states that voted Republican in 2024 have a much higher average gun ownership rate and average COVID-19 rate during the pandemic, and democratic states have a slightly higher average unemployment rate and average median household income.
@@ -156,28 +153,7 @@ We can compare the average gun ownership percentage, pandemic COVID-19 rate, une
 #   mtext(explanation, side = 1, line = 1, cex = 0.7)
 # }
 ```
-
 Lastly, we can create box plots to understand  the distribution of the data sets through their median, spread, and overall range. They highlight the central tendency, variability, and possible outliers and will give us more insight into our specific data and the validity of it as we are able to identify any skewed distributions. These specific ones are just a few of all of the box plots we can create for each variable introduced. 
-
-```{r, echo=FALSE}
-pairs_data <- joined_data[, comparison_data]
-pairs_cols <- ifelse(joined_data$Voting.Results.2024 == "1", "darkblue", "darkred")
-pairs(pairs_data, labels = comparison_names, cex = 1.4, cex.labels = 0.7, col = pairs_cols, main = "Pairs Plot of Assessed Variables Colored by 2024 Election Result")
-```
-
-```{r, echo=FALSE}
-corr_matrix <- cor(pairs_data, use = "pairwise.complete.obs")
-colnames(corr_matrix) <- comparison_names
-rownames(corr_matrix) <- comparison_names
-
-if (!require(corrplot)) {
-  install.packages("corrplot")
-  library(corrplot)
-}
-
-corrplot(corr_matrix, method = "color", addCoef.col = "black", tl.col = "black", tl.srt = 45, tl.cex = 0.71)
-```
-We can see from this pairs plot and related correlation heat map how each assessed variable relates to one-another. Each states Rate of Households that Own Guns (%), Age-Adjusted COVID Rate per 100000 people, Unemployment Rate, and Median Household Income are compared to each other on scatter plots, and then assessed for an $r$ correlation value, displayed on the heat map. The higher the correlation, the higher the absolute value of the $r$ value, with positive values representing positive linear correlations and negative values representing negative linear correlations. We can see that every variable has a maximum correlation of 1.0 when being compared to itself, which is obvious, but the two highest correlations I want to talk about are the correlation between Median household income and gun ownership and the correlation between median household income and COVID rate. Both of these values of -0.70 and -0.65 respectively show a strong, negative correlation between the two variables.
 
 **Analysis**:
 
@@ -192,14 +168,13 @@ Crucially, before running the selection process, we removed the 2016 and 2020 el
 The LASSO algorithm identified three distinct variables as the strongest drivers of the 2024 vote:
 
 1.  *Percentage of Households that Own Guns* (Cultural)
-- This variable seems to represent a more cultural aspect of the population. We hypothesized that a higher percentage of households that own guns will result in a higher likely likelihood that the state will vote Republican.
+- This variable seems to represent a more cultural aspect of the population. We hypothesized that a higher percentage of households that own guns will result in a higher likelihood that the state will vote Republican.
 
 2.  *Median Household Income* (Economic)
 - This variable represent  the economic aspect of the state's population. We hypothesized that a higher median household income will result in higher likelihood of the state voting Democrat. (States with higher Median Household Income such as California, New York and Illinois seem to favor democrats.)
 
-3.  *African American COVID Death Rate* (Regional/Health)
-- This variable provides a much harder to understand relationship. While it seems to represent a regional or health aspect of the state, it being chosen and how it will affect the models decision is a harder to theorize. While it is true that demographic data on the race makeup of a state can theoretically provide significance to the model, there also exists a variable in our dataset "black" that specifically targets the percentage of the state that is made up by an African American / Black population. What this variable seems to target. on the other hand is, more specifically, the number of African American individuals that unfortunately died from the COVID virus. We can hypothesize that this relates not only to the proportion of black population in a state (which appears to be higher on the southern republican states), but also to the degree of COVID prevention and medical care provided to these individuals.
-
+3.  *Age Adjusted COVID Death Rate* (Health)
+- From the CDC "Rates are based on deaths occurring in the specified week/month and are age-adjusted to the 2000 standard population using the direct method (see https://www.cdc.gov/nchs/data/nvsr/nvsr70/nvsr70-08-508.pdf).". This variable seems to encapsulate the health stantadards of each state. We hypothesize that states with higher Age Adjusted COVID rates will lean more towards republicans.
 *Model Refinement (Bayesian Logistic Regression)*
 
 We used these three selected variables to fit our final *Bayesian Logistic Regression* model. We chose the Bayesian approach (`bayesglm`) over standard logistic regression due to the small size of our dataset ($n=50$). Standard logistic regression often becomes unstable with small samples, especially when predictors are very strong, leading to infinite coefficients and unreliable standard errors. Bayesian logistic regression solves this by applying a prior distribution that acts as a stabilizer, gently pulling coefficients towards realistic values and ensuring the math remains robust.
@@ -243,6 +218,29 @@ To confirm the necessity of our three-variable approach, we tested simpler model
 
 As shown in Table 2, this model relies on proxies for urban density (where driving alone is less common) rather than direct cultural or economic indicators. While the p-values appear significant ($p < 0.05$), the model shows signs of instability, with massive coefficients ($-179.7$) and warnings of perfect separation in the training phase. Furthermore, this model achieved an accuracy of only **76.9%** on the test data. The drop in accuracy from the Champion Model (92.3%) to this benchmark demonstrates that while urban/rural proxies like commuting can identify the "obvious" states, they lack the nuance of the Culture (Guns) + Economy (Income) approach needed to correctly predict the more difficult swing states.
 
+
+**Table 3: Testing our model on different test/train splits**
+
+In this section, we tested our model using the same variable predictors on different train and test splits. We did this a total of ten times, using a different seed each time. Our results are as follows. 
+
+| Run / Metric | Seed | Accuracy |
+| :--- | :---: | :---: |
+| Run 1 | 101 | 92.31 % |
+| Run 2 | 202 | 100 % |
+| Run 3 | 303 | 76.92 % |
+| Run 4 | 404 | 84.62 % |
+| Run 5 | 505 | 92.31 % |
+| Run 6 | 606 | 100 % |
+| Run 7 | 707 | 92.31 % |
+| Run 8 | 808 | 92.31 % |
+| Run 9 | 909 | 92.31 % |
+| Run 10 | 1010 | 84.62 % |
+| | | |
+| **Mean Accuracy** | | **90.77 %** |
+| **Std Dev** | | **7.0687** |
+| **Range (Min - Max)** | | **76.92% - 100%** |
+
+![alt text here](/Users/jaime/Desktop/STAT107/Final_Project/pictures/000012.png)
 
 **Conclusion:**
 

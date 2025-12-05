@@ -6,147 +6,235 @@ source(here("00_requirements.R"))
 load(here("processed_data", "cleaned_data.RData"))
 ```
 
-```{r}
-glimpse(cleaned_data)
-```
-
-Build a basic logistic regression model with hand-picked variables to have a "base" model for comparisons.
+1. SETUP & DATA LOADING
 
 ```{r}
+# Load Data
+load(here("processed_data", "cleaned_data.RData"))
+
+# Pre-processing: Clean names, convert target to numeric (0/1), remove NAs
 cleaned_data_clean <- cleaned_data %>%
-  clean_names()
+  clean_names() %>%
+  mutate(voting_results_2024 = as.numeric(as.factor(voting_results_2024)) - 1) %>%
+  filter(!is.na(voting_results_2024))
 
-cleaned_data_clean <- cleaned_data_clean %>%
-  mutate(voting_results_2024 = as.factor(voting_results_2024))
-
-cleaned_data_clean$voting_results_2024 <- relevel(cleaned_data_clean$voting_results_2024, ref = "D")
-
+# Split Data (75% Train / 25% Test)
 set.seed(123) 
-
-
 data_split <- initial_split(cleaned_data_clean, prop = 0.75, strata = voting_results_2024)
-
 train_data <- training(data_split)
 test_data  <- testing(data_split)
 
+```
 
+2. BASELINE MODEL: STANDARD LOGISTIC REGRESSION
+
+We start with a base model using demographics (Income + Race)
+
+```{r}
 model_logistic <- glm(
   voting_results_2024 ~ median_household_income + 
                         unemployment_rate_august_2025 + 
-                        white + 
-                        black + 
-                        hispanic,
+                        white + black + hispanic,
   data = train_data,
   family = "binomial"
 )
 
-# See the summary of the model (coefficients, p-values, etc.)
+# Output Baseline Results
+print("--- BASELINE MODEL SUMMARY ---")
 summary(model_logistic)
 
-probabilities <- predict(model_logistic, newdata = test_data, type = "response")
+# Predictions
+probs_base <- predict(model_logistic, newdata = test_data, type = "response")
+preds_base <- ifelse(probs_base > 0.5, "D", "R")
+actuals    <- ifelse(test_data$voting_results_2024 == 1, "D", "R")
 
-predictions <- ifelse(probabilities > 0.5, "R", "D")
-
-confusion_matrix <- table(
-  Predicted = predictions, 
-  Actual = test_data$voting_results_2024
-)
-
-print(confusion_matrix)
-
-accuracy <- sum(diag(confusion_matrix)) / sum(confusion_matrix)
-
-print(paste("Model Accuracy on Test Data:", round(accuracy * 100, 2), "%"))
-
-plot(model_logistic)
+cm_base <- table(Predicted = preds_base, Actual = actuals)
+print(cm_base)
+print(paste("Baseline Accuracy:", round(sum(diag(cm_base)) / sum(cm_base) * 100, 2), "%"))
 ```
 
-Backwards eliminiation:
 
+3. HYPOTHESIS MODEL: URBAN/CULTURE (Guns + Transit)
+
+Testing Gun Culture vs. Urban Density using bayesglm
 
 ```{r}
-
-library(janitor)
-library(rsample)
-library(dplyr)
-
-# 1. Clean names (Good practice)
-cleaned_data_clean <- cleaned_data %>%
-  clean_names()
-
-# 2. Ensure the target is Numeric (0 and 1)
-# We skip 'relevel' because 0 and 1 imply their own order (0 is baseline)
-cleaned_data_clean <- cleaned_data_clean %>%
-  mutate(voting_results_2024 = as.numeric(voting_results_2024))
-
-set.seed(123) 
-
-# 3. Split the data
-data_split <- initial_split(cleaned_data_clean, prop = 0.75, strata = voting_results_2024)
-train_data <- training(data_split)
-test_data  <- testing(data_split)
-
-# Step 1: Install the package that handles "perfect separation"
-if(!require(arm)) install.packages("arm")
-library(arm)
-
-# Step 2: Use bayesglm instead of glm
-# We also removed "White" because White + Black + Hispanic creates multicollinearity 
-# (They sum to 100%, which confuses the math)
-library(arm)
-
-library(arm)
-
-# Hypothesis: Guns (Republican) vs. Cities/Transit (Democrat)
 urban_model <- bayesglm(
   voting_results_2024 ~ percentage_of_households_that_own_guns + 
-  median_household_income + 
-  public_transportation,   # <--- The "City" proxy
+                        median_household_income + 
+                        public_transportation,
   data = train_data, 
   family = "binomial"
 )
 
+print("--- URBAN/CULTURE MODEL SUMMARY ---")
 summary(urban_model)
 
-# Predictions
-probabilities <- predict(urban_model, newdata = test_data, type = "response")
-predictions <- ifelse(probabilities > 0.5, "D", "R")
+probs_urban <- predict(urban_model, newdata = test_data, type = "response")
+preds_urban <- ifelse(probs_urban > 0.5, "D", "R")
+cm_urban    <- table(Predicted = preds_urban, Actual = actuals)
 
-# Confusion Matrix
-actuals_labels <- ifelse(test_data$voting_results_2024 == 1, "D", "R")
-confusion_matrix <- table(Predicted = predictions, Actual = actuals_labels)
-print(confusion_matrix)
-
-# Accuracy
-accuracy <- sum(diag(confusion_matrix)) / sum(confusion_matrix)
-print(paste("Model Accuracy:", round(accuracy * 100, 2), "%"))
-
+print(cm_urban)
+print(paste("Urban Model Accuracy:", round(sum(diag(cm_urban)) / sum(cm_urban) * 100, 2), "%"))
 ```
 
+4. VARIABLE SELECTION: LASSO REGRESSION (Demographics Only)
+
+Prepare Matrix Data (Remove ID columns and History)
+```{r}
+train_nona <- na.omit(train_data)
+test_nona  <- na.omit(test_data)
+
+x_train_demo <- model.matrix(voting_results_2024 ~ . - location - voting_results_2016 - voting_results_2020, data = train_nona)[, -1]
+y_train_demo <- train_nona$voting_results_2024
+x_test_demo  <- model.matrix(voting_results_2024 ~ . - location - voting_results_2016 - voting_results_2020, data = test_nona)[, -1]
+
+# Run Lasso
+set.seed(123)
+cv_lasso_demo <- cv.glmnet(x_train_demo, y_train_demo, alpha = 1, family = "binomial")
+
+print("--- LASSO SELECTED VARIABLES (No History) ---")
+coef(cv_lasso_demo, s = "lambda.min")
+
+probs_lasso <- predict(cv_lasso_demo, newx = x_test_demo, s = "lambda.min", type = "response")
+preds_lasso <- ifelse(probs_lasso > 0.5, "D", "R")
+actuals_lasso <- ifelse(test_nona$voting_results_2024 == 1, "D", "R")
+
+cm_lasso <- table(Predicted = preds_lasso, Actual = actuals_lasso)
+print(cm_lasso)
+print(paste("Lasso Accuracy:", round(sum(diag(cm_lasso)) / sum(cm_lasso) * 100, 2), "%"))
+```
+
+5. CHAMPION MODEL: REFIT LASSO SURVIVORS
+Refit the variables found by Lasso (Guns + Income + AA_COVID) into bayesglm
 
 ```{r}
 
-library(blorr)
-
-# 1. Define the full model using standard glm (not bayesglm)
-full_glm_model <- glm(
+train_clean <- na.omit(train_data)
+final_clean_model <- bayesglm(
   voting_results_2024 ~ percentage_of_households_that_own_guns + 
-  median_household_income + 
-  worked_at_home + 
-  black + hispanic + unemployment_rate_august_2025,
+                        median_household_income + 
+                        aa_covid_rate + carpool,
   data = train_data, 
   family = "binomial"
 )
 
-# 2. Run the Backward Selection based on P-values
-# prem = 0.05 means "Remove variable if p-value is > 0.05"
-selection <- blr_step_p_backward(full_glm_model, prem = 0.05)
+print("--- MODEL SUMMARY (P-Values) ---")
+summary(final_clean_model)
+print("Odds Ratios:")
+print(exp(coef(final_clean_model)))
 
-# 3. View the results
-selection
+probs_final <- predict(final_clean_model, newdata = test_data, type = "response")
+
+# If probability > 50%, predict Democrat (1), else Republican (0)
+preds_final <- ifelse(probs_final > 0.5, "D", "R")
+
+# Create the Confusion Matrix
+actuals_final <- ifelse(test_data$voting_results_2024 == 1, "D", "R")
+confusion_matrix_final <- table(Predicted = preds_final, Actual = actuals_final)
+
+print("--- CONFUSION MATRIX ---")
+print(confusion_matrix_final)
+
+accuracy_final <- sum(diag(confusion_matrix_final)) / sum(confusion_matrix_final)
+print(paste(" Model Accuracy:", round(accuracy_final * 100, 2), "%"))
+
+
+# 5. DIAGNOSTICS (Corrected)
+# We use binnedplot instead of plot() because bayesglm is incompatible with standard plots
+binnedplot(fitted(final_clean_model), 
+           residuals(final_clean_model, type = "response"), 
+           main = "Binned Residual Plot (Model Health Check)")
 ```
 
 
+5.1 TESTING WITH DIFFERENT TEST SPLIT
+
+```{r}
+
+# 7. ROBUSTNESS CHECK: 10 RANDOM SPLITS LOOP
+# Instead of a single check, we loop through 10 different random seeds.
+# This ensures the model isn't just lucky with one specific data split.
+
+# Define 10 seeds to test
+seeds_to_test <- c(101, 202, 303, 404, 505, 606, 707, 808, 909, 1010)
+accuracy_results <- numeric(length(seeds_to_test))
+
+print("--- STARTING 10-SPLIT ROBUSTNESS CHECK ---")
+
+for (i in seq_along(seeds_to_test)) {
+  
+  # Set the specific seed for this iteration
+  set.seed(seeds_to_test[i])
+  
+  # 1. Create the new split
+  validation_split <- initial_split(cleaned_data_clean, prop = 0.75, strata = voting_results_2024)
+  valid_train_data <- training(validation_split)
+  valid_test_data  <- testing(validation_split)
+  
+  # Variables: Guns + Income + AA_COVID
+  validation_model <- bayesglm(
+    voting_results_2024 ~ percentage_of_households_that_own_guns + 
+                          median_household_income + 
+                          aa_covid_rate +
+                          carpool,
+    data = valid_train_data, 
+    family = "binomial"
+  )
+  
+  probs_valid <- predict(validation_model, newdata = valid_test_data, type = "response")
+  preds_valid <- ifelse(probs_valid > 0.5, "D", "R")
+  actuals_valid <- ifelse(valid_test_data$voting_results_2024 == 1, "D", "R")
+  
+  cm_valid <- table(Predicted = preds_valid, Actual = actuals_valid)
+  acc_valid <- sum(diag(cm_valid)) / sum(cm_valid)
+  
+  # Store result
+  accuracy_results[i] <- acc_valid
+  
+  print(paste("Run", i, "(Seed", seeds_to_test[i], ") - Accuracy:", round(acc_valid * 100, 2), "%"))
+}
+
+print("--- AGGREGATE RESULTS ---")
+print(paste("Mean Accuracy:", round(mean(accuracy_results) * 100, 2), "%"))
+print(paste("Min Accuracy: ", round(min(accuracy_results) * 100, 2), "%"))
+print(paste("Max Accuracy: ", round(max(accuracy_results) * 100, 2), "%"))
+print(paste("Std Dev:      ", round(sd(accuracy_results) * 100, 4)))
+
+# Optional: Visualize the spread
+hist(accuracy_results, 
+     main = "Distribution of Accuracy across 10 Splits", 
+     xlab = "Accuracy", 
+     col = "lightblue", 
+     breaks = 5)
+```
+
+
+6. COMPARISON: FORWARD SELECTION (P-Values < 0.05)
+Check if a simpler model (e.g. Money only) works
+
+```{r}
+full_candidate_model <- glm(
+  voting_results_2024 ~ . - location - voting_results_2016 - voting_results_2020 - total, 
+  data = train_data, 
+  family = "binomial"
+)
+
+forward_selection <- blr_step_p_forward(full_candidate_model, penter = 0.05)
+
+print("--- FORWARD SELECTION RESULTS ---")
+print(forward_selection)
+
+money_model <- forward_selection$model
+summary(money_model)
+
+probs_money <- predict(money_model, newdata = test_data, type = "response")
+preds_money <- ifelse(probs_money > 0.5, "D", "R")
+cm_money    <- table(Predicted = preds_money, Actual = actuals)
+
+print(cm_money)
+print(paste("Forward Selection Accuracy:", round(sum(diag(cm_money)) / sum(cm_money) * 100, 2), "%"))
+```
 
 
 

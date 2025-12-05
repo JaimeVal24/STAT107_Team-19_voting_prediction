@@ -37,3 +37,28 @@ if (!require(olsrr)) {
   install.packages("olsrr")
   library(olsrr)
 }
+
+if(!require(blorr)) {
+  install.packages("blorr")
+  library(blorr)
+} 
+
+if(!require(here)) {
+  install.packages("here")
+  library(here)
+} 
+
+if(!require(dplyr)) {
+  install.packages("dplyr")
+  library(dplyr)
+}
+
+if(!require(arm)) {
+  install.packages("arm")
+  library(arm)
+}
+
+if(!require(blorr)) {
+  install.packages("blorr")
+  library(blorr)
+}
