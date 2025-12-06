@@ -279,5 +279,5 @@ Jaime Valencia Lopez: Wrote 21_DataProcessing.Rmd (merged the first four dataset
 
 Evan Silzle: Wrote 02_func_Plots.r, Helped contribute to data cleaning process by merging a set of simple data sets manually, loading and cleaning them, then merging them with the main data set, as well as some cleaning of the merged data frame. Created and analyzed comparative data visualizations using loops and functions: two scatterplots, six related race bar graphs, and three related bar graphs for our LASSO data, a pairs-plot for the three, a heatmap of correlation between the three, and five violin plots for the distribution of the three LASSO variables and the two forwardly selected variables.
 
-Sumukh Chanda: Helped contribute to the idea and worked on the data visualization models. 
+Sumukh Chanda: Helped contribute to the idea and worked on the data visualization models. Wrote the Abstract and Conclusion. 
 
