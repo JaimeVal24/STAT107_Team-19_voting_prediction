@@ -40,7 +40,7 @@ model_logistic <- glm(
 )
 
 # Output Baseline Results
-print("--- BASELINE MODEL SUMMARY ---")
+print("  BASELINE MODEL SUMMARY  ")
 summary(model_logistic)
 
 # Predictions
@@ -67,7 +67,7 @@ urban_model <- bayesglm(
   family = "binomial"
 )
 
-print("--- URBAN/CULTURE MODEL SUMMARY ---")
+print("  URBAN/CULTURE MODEL SUMMARY  ")
 summary(urban_model)
 
 probs_urban <- predict(urban_model, newdata = test_data, type = "response")
@@ -93,7 +93,7 @@ x_test_demo  <- model.matrix(voting_results_2024 ~ . - location - voting_results
 set.seed(123)
 cv_lasso_demo <- cv.glmnet(x_train_demo, y_train_demo, alpha = 1, family = "binomial")
 
-print("--- LASSO SELECTED VARIABLES (No History) ---")
+print("  LASSO SELECTED VARIABLES (No History)  ")
 coef(cv_lasso_demo, s = "lambda.min")
 
 probs_lasso <- predict(cv_lasso_demo, newx = x_test_demo, s = "lambda.min", type = "response")
@@ -114,12 +114,12 @@ train_clean <- na.omit(train_data)
 final_clean_model <- bayesglm(
   voting_results_2024 ~ percentage_of_households_that_own_guns + 
                         median_household_income + 
-                        aa_covid_rate + carpool,
+                        aa_covid_rate,
   data = train_data, 
   family = "binomial"
 )
 
-print("--- MODEL SUMMARY (P-Values) ---")
+print("MODEL SUMMARY (P-Values)")
 summary(final_clean_model)
 print("Odds Ratios:")
 print(exp(coef(final_clean_model)))
@@ -133,18 +133,19 @@ preds_final <- ifelse(probs_final > 0.5, "D", "R")
 actuals_final <- ifelse(test_data$voting_results_2024 == 1, "D", "R")
 confusion_matrix_final <- table(Predicted = preds_final, Actual = actuals_final)
 
-print("--- CONFUSION MATRIX ---")
+print("  CONFUSION MATRIX  ")
 print(confusion_matrix_final)
 
 accuracy_final <- sum(diag(confusion_matrix_final)) / sum(confusion_matrix_final)
 print(paste(" Model Accuracy:", round(accuracy_final * 100, 2), "%"))
 
 
-# 5. DIAGNOSTICS (Corrected)
 # We use binnedplot instead of plot() because bayesglm is incompatible with standard plots
 binnedplot(fitted(final_clean_model), 
            residuals(final_clean_model, type = "response"), 
            main = "Binned Residual Plot (Model Health Check)")
+
+summary(final_clean_model)
 ```
 
 
@@ -160,7 +161,7 @@ TESTING WITH DIFFERENT TEST SPLIT
 seeds_to_test <- c(101, 202, 303, 404, 505, 606, 707, 808, 909, 1010)
 accuracy_results <- numeric(length(seeds_to_test))
 
-print("--- STARTING 10-SPLIT ROBUSTNESS CHECK ---")
+print("  STARTING 10-SPLIT ROBUSTNESS CHECK  ")
 
 for (i in seq_along(seeds_to_test)) {
   
@@ -176,8 +177,7 @@ for (i in seq_along(seeds_to_test)) {
   validation_model <- bayesglm(
     voting_results_2024 ~ percentage_of_households_that_own_guns + 
                           median_household_income + 
-                          aa_covid_rate +
-                          carpool,
+                          aa_covid_rate,
     data = valid_train_data, 
     family = "binomial"
   )
@@ -195,7 +195,7 @@ for (i in seq_along(seeds_to_test)) {
   print(paste("Run", i, "(Seed", seeds_to_test[i], ") - Accuracy:", round(acc_valid * 100, 2), "%"))
 }
 
-print("--- AGGREGATE RESULTS ---")
+print("  AGGREGATE RESULTS  ")
 print(paste("Mean Accuracy:", round(mean(accuracy_results) * 100, 2), "%"))
 print(paste("Min Accuracy: ", round(min(accuracy_results) * 100, 2), "%"))
 print(paste("Max Accuracy: ", round(max(accuracy_results) * 100, 2), "%"))
@@ -221,7 +221,7 @@ full_candidate_model <- glm(
 
 forward_selection <- blr_step_p_forward(full_candidate_model, penter = 0.05)
 
-print("--- FORWARD SELECTION RESULTS ---")
+print("  FORWARD SELECTION RESULTS  ")
 print(forward_selection)
 
 money_model <- forward_selection$model

@@ -62,3 +62,13 @@ if(!require(blorr)) {
   install.packages("blorr")
   library(blorr)
 }
+
+if (!require(vioplot)) {
+  install.packages("vioplot")
+  library(vioplot)
+}
+
+if (!require(corrplot)) {
+  install.packages("corrplot")
+  library(corrplot)
+}
