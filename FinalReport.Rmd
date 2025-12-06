@@ -20,13 +20,11 @@ load(here("processed_data", "cleaned_data.RData"))
 joined_data <- cleaned_data
 ```
 
-## R Markdown
-
-**Title:** A Predictive Model of USA Presidential Election by States.
+## A Predictive Model of USA Presidential Election by States.
 
 *Link to the Github: * https://github.com/JaimeVal24/STAT107_Final_Project
 
-*Abstract:* 
+**Abstract:**
 
 In this project, we develop a statistical model to predict which party a state will support in future elections based on 2024 presidential election data and general demographic data. Using publicly available data for all 50 states, we compiled measures of gun ownership, median household income, unemployment, COVID‑19 mortality, transportation patterns, racial composition, and more. We then linked these variables to each state’s 2024 presidential outcome. After initial exploration with correlation plots and pairs plots, we fit a series of logistic regression models and used LASSO regularization for variable selection to isolate the most informative predictors. We then estimated a Bayesian logistic regression model using the selected variables and evaluated its performance on specific states. The final model achieved roughly 90% accuracy, identifying gun ownership, median household income, and Age-Adjusted COVID‑19 death rate as the key predictors. These results suggest that, although past voting behavior remains the strongest single predictor in practice, a combination of demographic indicators can also identify state level support, while highlighting how cultural, economic, and health‑related factors jointly shape the modern U.S. voting map.
 
@@ -221,9 +219,12 @@ As seen in Table 1, Gun Ownership was the primary driver of the model and the on
 
 While Median Household Income ($p = 0.356$) and AA COVID Death Rate ($p = 0.160$) yielded p-values above the traditional 0.05 threshold, their inclusion was essential for the model's predictive power. In small datasets, variables that overlap (multicollinearity) often split the statistical "credit," causing their individual p-values to rise. However, without these variables, the model lacks the nuance to identify "swing" states. Income helps distinguish wealthy suburban areas (which may lean Democrat despite moderate gun ownership), while COVID rates likely help identify specific regional voting patterns in the South.
 
+
+\newpage
+
 **Diagnostics**
 
-![alt text here](pictures/000010.png)
+![Diagnostic Check](pictures/000010.png)
 
 The binned residual plot confirms that the final model is well-calibrated and fits the data effectively. In an ideal model, roughly 95% of the residuals should fall within the $\pm 2$ standard error bounds (represented by the grey lines). As shown in the figure, the residuals are predominantly contained within these error bands across the entire range of predicted probabilities. The points in the middle probability range (0.4 to 0.6) which represent the swing states—fall within the calculated bounds. This indicates that the model successfully captures the complex dynamics of battleground elections without significant systematic bias or underfitting.
 
@@ -243,6 +244,7 @@ To confirm the necessity of our three-variable approach, we tested simpler model
 
 As shown in Table 2, this model relies on proxies for urban density (where driving alone is less common) rather than direct cultural or economic indicators. While the p-values appear significant ($p < 0.05$), the model shows signs of instability, with massive coefficients ($-179.7$) and warnings of perfect separation in the training phase. Furthermore, this model achieved an accuracy of only **76.9%** on the test data. The drop in accuracy from the Champion Model (92.3%) to this benchmark demonstrates that while urban/rural proxies like commuting can identify the "obvious" states, they lack the nuance of the Culture (Guns) + Economy (Income) approach needed to correctly predict the more difficult swing states.
 
+\newpage
 
 **Table 3: Testing our model on different test/train splits**
 
@@ -267,9 +269,10 @@ In this section, we tested our model using the same variable predictors on diffe
 
 
 
-![alt text here](pictures/000012.png)
+![Accuracy Distribution](pictures/000012.png)
+This figure shows use a somewhat normal distribution of the accuracy based around the (0.90 - 0.95) interval.
 
-With this iterative approach to testing our model, we are able to solidify the validity of our model, proving that the training and test split has a low effect on the accuracy of our model; as it manages to remain at around 90 percent. This leads us to believe that although we arrived at statistically insignificant predictive values (p > 0.05), we still managed to arrive at a model that tests with a high accuracy.
+With this iterative approach to testing our model, we are able to solidify the validity of our model, proving that the training and test split has a low effect on the accuracy of our model; as it manages to remain at around 90 percent. This leads us to believe that although we arrived at statistically insignificant predictive values (p > 0.05), we still managed to arrive at a model that tests with a high accuracy. 
 
 
 **Conclusion:**
