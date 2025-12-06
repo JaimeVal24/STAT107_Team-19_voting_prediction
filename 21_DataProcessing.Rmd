@@ -26,7 +26,6 @@ print(demographics)
 Then, we add the commuter data to the overall data set. For this, we must transform the data set in order to follow the overall format where our observations are each state and the columns are variables of each state.
 
 ```{r}
-# --- Load and clean commuter data ---
 commuter_data_raw <- read_tsv(here("Datasets", "state_commuter_mode.csv")) %>%
   
   rename(Share = "Commute mode share (percent)")  # Simplify column name
@@ -34,7 +33,7 @@ commuter_data_raw <- read_tsv(here("Datasets", "state_commuter_mode.csv")) %>%
 commuter_data_wide <- commuter_data_raw %>%
   
   filter(Year == 2023) %>%   # Keep only the most recent year
-  select(-Year) %>%          # Drop the year column
+  dplyr::select(-Year) %>%          # Drop the year column
   pivot_wider(               # Reshape from long to wide format
     names_from = Mode,
     values_from = Share

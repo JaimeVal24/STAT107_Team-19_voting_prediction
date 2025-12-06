@@ -6,7 +6,7 @@ source(here("00_requirements.R"))
 load(here("processed_data", "cleaned_data.RData"))
 ```
 
-1. SETUP & DATA LOADING
+ SETUP & DATA LOADING
 
 ```{r}
 # Load Data
@@ -26,7 +26,7 @@ test_data  <- testing(data_split)
 
 ```
 
-2. BASELINE MODEL: STANDARD LOGISTIC REGRESSION
+ BASELINE MODEL: STANDARD LOGISTIC REGRESSION
 
 We start with a base model using demographics (Income + Race)
 
@@ -54,7 +54,7 @@ print(paste("Baseline Accuracy:", round(sum(diag(cm_base)) / sum(cm_base) * 100,
 ```
 
 
-3. HYPOTHESIS MODEL: URBAN/CULTURE (Guns + Transit)
+ HYPOTHESIS MODEL: URBAN/CULTURE (Guns + Transit)
 
 Testing Gun Culture vs. Urban Density using bayesglm
 
@@ -78,7 +78,7 @@ print(cm_urban)
 print(paste("Urban Model Accuracy:", round(sum(diag(cm_urban)) / sum(cm_urban) * 100, 2), "%"))
 ```
 
-4. VARIABLE SELECTION: LASSO REGRESSION (Demographics Only)
+ VARIABLE SELECTION: LASSO REGRESSION (Demographics Only)
 
 Prepare Matrix Data (Remove ID columns and History)
 ```{r}
@@ -105,7 +105,7 @@ print(cm_lasso)
 print(paste("Lasso Accuracy:", round(sum(diag(cm_lasso)) / sum(cm_lasso) * 100, 2), "%"))
 ```
 
-5. CHAMPION MODEL: REFIT LASSO SURVIVORS
+ FINAL MODEL: REFIT LASSO SURVIVORS
 Refit the variables found by Lasso (Guns + Income + AA_COVID) into bayesglm
 
 ```{r}
@@ -148,7 +148,7 @@ binnedplot(fitted(final_clean_model),
 ```
 
 
-5.1 TESTING WITH DIFFERENT TEST SPLIT
+TESTING WITH DIFFERENT TEST SPLIT
 
 ```{r}
 
@@ -209,8 +209,7 @@ hist(accuracy_results,
      breaks = 5)
 ```
 
-
-6. COMPARISON: FORWARD SELECTION (P-Values < 0.05)
+ COMPARISON: FORWARD SELECTION (P-Values < 0.05)
 Check if a simpler model (e.g. Money only) works
 
 ```{r}
