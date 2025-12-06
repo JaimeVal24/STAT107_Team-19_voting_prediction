@@ -221,7 +221,7 @@ While Median Household Income ($p = 0.356$) and AA COVID Death Rate ($p = 0.160$
 
 **Diagnostics**
 
-![alt text here](/Users/jaime/Desktop/STAT107/Final_Project/pictures/000010.png)
+![alt text here](pictures/000010.png)
 
 The binned residual plot confirms that the final model is well-calibrated and fits the data effectively. In an ideal model, roughly 95% of the residuals should fall within the $\pm 2$ standard error bounds (represented by the grey lines). As shown in the figure, the residuals are predominantly contained within these error bands across the entire range of predicted probabilities. The points in the middle probability range (0.4 to 0.6) which represent the swing states—fall within the calculated bounds. This indicates that the model successfully captures the complex dynamics of battleground elections without significant systematic bias or underfitting.
 
@@ -263,7 +263,10 @@ In this section, we tested our model using the same variable predictors on diffe
 | **Std Dev** | | **7.0687** |
 | **Range (Min - Max)** | | **76.92% - 100%** |
 
-![alt text here](/Users/jaime/Desktop/STAT107/Final_Project/pictures/000012.png)
+
+
+![alt text here](pictures/000012.png)
+
 With this iterative approach to testing our model, we are able to solidify the validity of our model, proving that the training and test split has a low effect on the accuracy of our model; as it manages to remain at around 90 percent. This leads us to believe that although we arrived at statistically insignificant predictive values (p > 0.05), we still managed to arrive at a model that tests with a high accuracy.
 
 
