@@ -117,7 +117,7 @@ Next, we can look at the ethnic breakdown of each election, split by states that
 ```{r, echo=FALSE}
 comparison_data <- c("PercentageOfHouseholdsThatOwnGuns", "aa_COVID_rate", "Median.Household.Income")
 i <- 1
-comparison_names  <- c("Rate of Households that Own Guns (%)", "Age-Adjusted COVID Rate per 100000", "Median Household Income (USD)")
+comparison_names  <- c("Rate of Households that Own Guns (%)", "Age-Adjusted COVID Death Rate per 100,000", "Median Household Income (USD)")
 par(mfrow = c (2, 2), mar = c(2, 2, 3, 2))
  for(var in comparison_data){
    dem_states <- joined_data[joined_data[["Voting.Results.2024"]] == "1", ]
@@ -157,24 +157,30 @@ corrplot::corrplot(corr_matrix, method = "color", addCoef.col = "black", tl.col 
 We can see from this pairs plot and related correlation heat map how each assessed variable relates to one-another. Each states Rate of Households that Own Guns (%), Age-Adjusted COVID Rate per 100000 people, and Median Household Income are compared to each other on scatter plots, and then assessed for an $r$ correlation value, displayed on the heat map. The higher the correlation, the higher the absolute value of the $r$ value, with positive values representing positive linear correlations and negative values representing negative linear correlations. We can see that every variable has a maximum correlation of 1.0 when being compared to itself, which is obvious, but the two highest correlations I want to talk about are the correlation between Median household income and gun ownership and the correlation between median household income and COVID rate. Both of these values of -0.70 and -0.65 respectively show a strong, negative correlation between the two variables.
 
 ```{r, echo=FALSE}
-# selected_vars <- c(
-#   "COVID_deaths",
-#   "PercentageOfHouseholdsThatOwnGuns",  # <-- This line is corrected
-#   "White"
-# )
-# 
-# for (col_name in selected_vars) {
-#   boxplot(joined_data[[col_name]],
-#           main = paste("Distribution of", col_name),
-#           ylab = paste("Values of", col_name))
-#   grid(nx = NA, ny = NULL)
-#   explanation <- paste(
-#     "This boxplot shows the spread and variability of", col_name, "across states."
-#   )
-#   mtext(explanation, side = 1, line = 1, cex = 0.7)
-# }
+violin_data <- c("PercentageOfHouseholdsThatOwnGuns", "aa_COVID_rate", "Median.Household.Income", "Drove alone", "Carpool")
+violin_titles <- c("Rate of Households that \n Own Guns (%)", "Age-Adjusted COVID Death Rate \n per 100000", "Median Household Income (USD) \n ", "Percent of People Who \n Drove Alone to Work", "Percent of People Who \n Carpooled to Work")
+par(mfrow = c(1, 2))
+i <- 1
+
+if (!require(vioplot)) {
+  install.packages("vioplot")
+  library(vioplot)
+}
+ 
+for (var in violin_data) {
+   dem_states <- joined_data[joined_data[["Voting.Results.2024"]] == "1", ]
+   rep_states <- joined_data[joined_data[["Voting.Results.2024"]] == "0", ]
+  
+  vioplot(rep_states[[var]], dem_states[[var]], names = c("Republican", "Democrat"), col = c("darkred", "darkblue"), main = paste(violin_titles[i], "by 2024 Voting"), cex.main = 0.8, ylab = "")
+   
+  i <- i + 1
+}
+par(mfrow = c(1, 1))
 ```
-Lastly, we can create box plots to understand  the distribution of the data sets through their median, spread, and overall range. They highlight the central tendency, variability, and possible outliers and will give us more insight into our specific data and the validity of it as we are able to identify any skewed distributions. These specific ones are just a few of all of the box plots we can create for each variable introduced. 
+
+Lastly, we can create violin plots to understand the distribution of the analyzed variables in the data set through their median, spread, and overall range. They highlight the central tendency, variability, and possible outliers and will give us more insight into our specific data and the validity of it as we are able to identify any skewed distributions. These specific ones are just a few of all of the box plots we can create for each variable introduced. 
+
+The three variables LASSO chose for our regression model,Rate of Households that Own Guns (%), Age-Adjusted COVID Rate per 100000 people, and Median Household Income all showed relatively similar ranges with one political parties distribution clearly above the others. However, for the driving data that our forward selecting model chose, The ranges varied a lot more. For the percent of people who drove alone, our violin plot shows that although a majority of people drove alone to work across both parties, there were a few democratic states that showed a significantly lower rate of driving alone. Interestingly, When looking at the rate of people who carpooled to work, even though a similar rate can be seen across states from both political parties, a few democratic states features significantly lower rates of carpooling and a few democratic states features significantly higher rates of carpooling, giving the distribution a much higher range over republican states.
 
 **Analysis**:
 
@@ -271,7 +277,7 @@ Overall, the final Bayesian logistic regression model demonstrated that state‑
 
 Jaime Valencia Lopez: Wrote 21_DataProcessing.Rmd (merged the first four datasets and added the descriptions), 22_DataCleaning.Rmd (all code and descriptions), 01_funct_DataCleaning.R, FinalReport (excluding vizualizations) and README.md.
 
-Evan Silzle: Wrote 02_func_Plots.r, Helped contribute to data cleaning process by merging a set of simple data sets manually, loading and cleaning them, then merging them with the main data set, as well as some cleaning of the merged data frame. Created and analyzed comparative data visualizations using loops and functions: two scatterplots, six related pie charts, and four related bar graphs.
+Evan Silzle: Wrote 02_func_Plots.r, Helped contribute to data cleaning process by merging a set of simple data sets manually, loading and cleaning them, then merging them with the main data set, as well as some cleaning of the merged data frame. Created and analyzed comparative data visualizations using loops and functions: two scatterplots, six related race bar graphs, and three related bar graphs for our LASSO data, a pairs-plot for the three, a heatmap of correlation between the three, and five violin plots for the distribution of the three LASSO variables and the two forwardly selected variables.
 
 Sumukh Chanda: Helped contribute to the idea and worked on the data visualization models. 
 
