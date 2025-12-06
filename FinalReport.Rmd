@@ -108,8 +108,8 @@ for(year in elections){
   
   year_number <- sub("Voting.Results\\.", "", year)
   
-  barplot(avg_race_dem, names.arg = race_data, las = 2, cex.names = 0.7, cex.main = 0.85, main = paste("Democratic Voting Results by Race in", year_number), ylab = "Average %", col = terrain.colors(length(race_data)), ylim = c(0, 0.8))
-  barplot(avg_race_rep, names.arg = race_data, las = 2, cex.names = 0.7, cex.main = 0.85, main = paste("Republican Voting Results by Race in", year_number), ylab = "Average %", col = terrain.colors(length(race_data)), ylim = c(0, 0.8))
+  barplot(avg_race_dem, names.arg = race_data, las = 2, cex.names = 0.7, cex.main = 0.75, main = paste("Democratic Voting Results by Race in", year_number), ylab = "Average %", col = terrain.colors(length(race_data)), ylim = c(0, 0.8))
+  barplot(avg_race_rep, names.arg = race_data, las = 2, cex.names = 0.7, cex.main = 0.75, main = paste("Republican Voting Results by Race in", year_number), ylab = "Average %", col = terrain.colors(length(race_data)), ylim = c(0, 0.8))
 }
 ```
 Next, we can look at the ethnic breakdown of each election, split by states that went red in each election and states that went blue. We can see that for every election the Democrats had less of a proportion of their votes from white voters, and more of a proportion of their votes from minority races. Additionally, although the ethnic breakdowns of each election differ greatly for democratic states vs republican states, the breakdowns barely differ when comparing different years.
@@ -117,7 +117,7 @@ Next, we can look at the ethnic breakdown of each election, split by states that
 ```{r, echo=FALSE}
 comparison_data <- c("PercentageOfHouseholdsThatOwnGuns", "aa_COVID_rate", "Median.Household.Income")
 i <- 1
-comparison_names  <- c("Rate of Households that Own Guns (%)", "Age-Adjusted COVID Death Rate per 100,000", "Median Household Income (USD)")
+comparison_names  <- c("Rate of Households that Own Guns (%)", "Age-Adjusted COVID Death Rate \n per 100,000 people", "Median Household Income (USD)")
 par(mfrow = c (2, 2), mar = c(2, 2, 3, 2))
  for(var in comparison_data){
    dem_states <- joined_data[joined_data[["Voting.Results.2024"]] == "1", ]
@@ -131,7 +131,7 @@ par(mfrow = c (2, 2), mar = c(2, 2, 3, 2))
   barplot(bar_vector, names.arg = c("Republican", "Democrat"), main = paste(comparison_names[i], "by 2024 Voting"), ylab = var, cex.main = 0.8, col = c("darkred", "darkblue"))
   i = i + 1
 }
- par(mfrow = c (1, 1))
+par(mfrow = c(1, 1))
 ```
 
 We can compare the average gun ownership percentage, pandemic COVID-19 rate, and median household income for states that went blue and red in the 2024 election. We can see that states that voted Republican in 2024 have a much higher average gun ownership rate and average COVID-19 rate during the pandemic, and democratic states have a slightly higher average unemployment rate and average median household income.
@@ -143,12 +143,14 @@ pairs(pairs_data, labels = comparison_names, cex = 1.4, cex.labels = 0.7, col = 
 ```
 
 ```{r, echo=FALSE}
+par(mfrow = c (1, 1), mar = c(2, 2, 3, 4))
+
 corr_matrix <- cor(pairs_data, use = "pairwise.complete.obs")
 colnames(corr_matrix) <- comparison_names
 rownames(corr_matrix) <- comparison_names
 
 
-corrplot::corrplot(corr_matrix, method = "color", addCoef.col = "black", tl.col = "black", tl.srt = 45, tl.cex = 0.71)
+corrplot::corrplot(corr_matrix, method = "color", addCoef.col = "black", tl.col = "black", tl.srt = 55, tl.cex = 0.71)
 ```
 We can see from this pairs plot and related correlation heat map how each assessed variable relates to one-another. Each states Rate of Households that Own Guns (%), Age-Adjusted COVID Rate per 100000 people, and Median Household Income are compared to each other on scatter plots, and then assessed for an $r$ correlation value, displayed on the heat map. The higher the correlation, the higher the absolute value of the $r$ value, with positive values representing positive linear correlations and negative values representing negative linear correlations. We can see that every variable has a maximum correlation of 1.0 when being compared to itself, which is obvious, but the two highest correlations I want to talk about are the correlation between Median household income and gun ownership and the correlation between median household income and COVID rate. Both of these values of -0.70 and -0.65 respectively show a strong, negative correlation between the two variables.
 
